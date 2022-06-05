@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/layout.dart';
+import '../objects/game_button.dart';
 
 class Game extends StatefulWidget {
   const Game({super.key});
@@ -10,12 +11,17 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
+  var board = [];
 
-  var board = ["00", "01", "02", "10", "11", "12", "20", "21", "22"]; // TODO add game_button to array
+  _GameState() {
+    for (int i = 0; i < 9; i++) {
+      board.add(BoardSqaure(index: i));
+    }
+  }
 
   void handlePress(int index) {
     setState(() => {
-      board[index] += "Clicked"
+      board[index].value += " Clicked"
     });
   }
 
@@ -30,14 +36,14 @@ class _GameState extends State<Game> {
               child: Center(
                 child: GridView.count(
                   crossAxisCount: 3,
-                  children: board.map((value) => Container(
+                  children: board.map((element) => Container(
                       decoration: BoxDecoration(
                         border: Border.all(),
                       ),
                       child: Center(
                         child: TextButton(
-                          child: Text("$value"),
-                          onPressed: () => handlePress(0),
+                          child: Text(element.value),
+                          onPressed: () => handlePress(element.index),
                         ),
                       ),
                     ),

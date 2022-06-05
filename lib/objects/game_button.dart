@@ -1,9 +1,8 @@
-
-class BoardWindow {
-  BoardWindow({required this.index, this.value = ""});
+class BoardSqaure {
+  BoardSqaure({required this.index, this.value = "Text"});
 
   final int index;
-  final String value;
+  String value; // TODO Use enum or int?
 
 }
 
