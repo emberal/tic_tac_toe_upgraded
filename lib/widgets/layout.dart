@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Layout extends StatelessWidget {
-  const Layout({this.body, this.title = "Tic Tac Toe Upgraded", Key? key}) : super(key: key);
+  const Layout({this.body, this.title = "Tic Tac Toe Upgraded", super.key});
 
   final Widget? body;
   final String title;
@@ -11,11 +11,8 @@ class Layout extends StatelessWidget {
     return Container(
         child: Scaffold(
           appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
             title: Text(title),
             actions: const [
-              //Expanded(child: title),
               IconButton( // Menu
                 onPressed: null, // TODO
                 tooltip: 'Menu',
@@ -24,6 +21,7 @@ class Layout extends StatelessWidget {
             ],
           ),
           body: body,
-    ));
+        )
+    );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({Key? key, this.menus}) : super(key: key);
+  const Menu({super.key, this.menus});
 
   final List<Map<String, Object>>? menus;
 

@@ -3,7 +3,7 @@ import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 import './game/game.dart';
 import './settings.dart';
 import './stats.dart';
-import './menu.dart';
+import 'widgets/menu.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,15 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue, // Primary app colour
       ),
-      home: const MyHomePage(title: 'Tic Tac Toe Upgraded'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
