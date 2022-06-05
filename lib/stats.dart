@@ -8,10 +8,8 @@ class Stats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const Layout(
+    return const Layout(
 
-      ),
     );
   }
 }

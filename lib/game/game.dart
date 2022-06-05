@@ -10,11 +10,43 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
+
+  var board = ["00", "01", "02", "10", "11", "12", "20", "21", "22"]; // TODO add game_button to array
+
+  void handlePress(int index) {
+    setState(() => {
+      board[index] += "Clicked"
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const Layout(
-
+    return Layout(
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              child: Center(
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  children: board.map((value) => Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(),
+                      ),
+                      child: Center(
+                        child: TextButton(
+                          child: Text("$value"),
+                          onPressed: () => handlePress(0),
+                        ),
+                      ),
+                    ),
+                  ).toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

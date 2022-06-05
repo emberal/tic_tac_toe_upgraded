@@ -9,19 +9,21 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-            actions: const [
-              IconButton( // Menu
-                onPressed: null, // TODO
-                tooltip: 'Menu',
-                icon: Icon(Icons.menu),
-              ),
-            ],
-          ),
-          body: body,
-        )
+      width: double.infinity,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          actions: const [
+            IconButton(
+              // Menu
+              onPressed: null, // TODO
+              tooltip: 'Menu',
+              icon: Icon(Icons.menu),
+            ),
+          ],
+        ),
+        body: body,
+      ),
     );
   }
 }
