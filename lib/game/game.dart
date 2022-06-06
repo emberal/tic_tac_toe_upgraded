@@ -11,17 +11,17 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
-  var board = [];
+  final _board = [];
 
   _GameState() {
     for (int i = 0; i < 9; i++) {
-      board.add(BoardSqaure(index: i));
+      _board.add(BoardSqaure(index: i));
     }
   }
 
   void handlePress(int index) {
     setState(() => {
-      board[index].value += " Clicked"
+      _board[index].value += " Clicked"
     });
   }
 
@@ -36,7 +36,7 @@ class _GameState extends State<Game> {
               child: Center(
                 child: GridView.count(
                   crossAxisCount: 3,
-                  children: board.map((element) => Container(
+                  children: _board.map((element) => Container(
                       decoration: BoxDecoration(
                         border: Border.all(),
                       ),
