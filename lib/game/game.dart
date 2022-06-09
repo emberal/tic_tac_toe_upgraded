@@ -56,9 +56,46 @@ class _GameState extends State<Game> {
 
   /// Checks if a player has three in a row, or both players have used all moves
   bool isComplete() {
-    for (int i = 0; i < _board.length; i++) {
-      _board[i] as GameButton;
-      // TODO
+    return isCompleteHorizontal() || isCompleteVertical() || isCompleteDiagonal();
+  }
+
+  bool isCompleteHorizontal() {
+    for (int i = 0; i < _board.length; i += 3) { // First column
+      bool complete = false;
+      for (int j = i + 1; j % 3 != 0; j++) { // Second and third column
+         complete = _board[i].player != Player.none && _board[i].player == _board[j].player;
+      }
+      if (complete) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool isCompleteVertical() {
+    for (int i = 0; i < _board.length / 3; i++) { // First row
+      bool complete = false;
+      for (int j = i + 3; j < _board.length; j += 3) { // Second and third row
+        complete = _board[i].player != Player.none && _board[i].player == _board[j].player;
+      }
+      if (complete) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool isCompleteDiagonal() {
+    var space = 4; // The space between the squares
+    for (int i = 0; i < _board.length / 3; i += 2) { // Switches between the 2 top corners
+      bool complete = false;
+      for (int j = i + space; j < _board.length - i * space / 2; j += space) { // Iterates through the diagonals, first round the space is 4, then 2 (0-4-8, then 2-4-6)
+        complete = _board[i].player != Player.none && _board[i].player == _board[j].player;
+      }
+      if (complete) {
+        return true;
+      }
+      space = 2; // half on the second iteration
     }
     return false;
   }
