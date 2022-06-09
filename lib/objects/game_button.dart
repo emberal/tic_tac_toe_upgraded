@@ -1,8 +1,10 @@
-class BoardSqaure {
-  BoardSqaure({required this.index, this.value = "Text"});
+import '../enums/player_enum.dart';
+
+class GameButton {
+  GameButton({required this.index, this.value = 0, this.player = Player.none});
 
   final int index;
-  String value; // TODO Use enum or int?
-
+  int value;
+  Player player;
 }
 
