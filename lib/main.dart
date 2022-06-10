@@ -33,20 +33,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-
-    return const Layout(
-      body: Center(
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const Layout(
+        body: Center(
           child: Menu(
-              menus: [
-                {"page": Game(), "text": "New Game"},
-                {"page": Stats(), "text": "Stats"},
-                {"page": Settings(), "text": "Settings"}
-              ]
-          )
-      )
+            menus: [
+              {"page": Game(), "text": "New Game"},
+              {"page": Stats(), "text": "Stats"},
+              {"page": Settings(), "text": "Settings"},
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
