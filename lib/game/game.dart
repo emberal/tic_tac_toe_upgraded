@@ -15,7 +15,7 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   final _board = [];
-  final playerRed = PlayerRed();
+  PlayerRed? playerRed;
   int? _activeNumber; // Is 'null' when no number is active
 
   final _values = [
@@ -30,6 +30,7 @@ class _GameState extends State<Game> {
     for (int i = 0; i < 9; i++) {
       _board.add(GameButton(index: i));
     }
+    playerRed = PlayerRed(handlePress);
   }
 
   void handlePress(int index, Player p) {
@@ -42,7 +43,7 @@ class _GameState extends State<Game> {
       _activeNumber = null;
 
       if (isComplete()) {
-        // TODO find winner, mark the winning area, update stats, modal popup asking for new game
+        // TODO find winner, mark the winning area, update stats
         showDialog(
           context: context,
           builder: (BuildContext context) => const CompleteAlert(
@@ -150,7 +151,7 @@ class _GameState extends State<Game> {
                                   ? null
                                   : {
                                       handlePress(element.index, Player.blue),
-                                      playerRed.nextMove(),
+                                      playerRed!.nextMove(),
                                       // PlayerRed does it's next move
                                     },
                             ),

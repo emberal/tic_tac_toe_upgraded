@@ -20,7 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue, // Primary app colour
       ),
-      home: const MyHomePage(),
+      initialRoute: "/",
+      routes: {
+        "/": (context) => const MyHomePage(),
+        "/game": (context) => const Game(),
+        "/stats": (context) => const Stats(),
+        "/settings": (context) => const Settings(),
+      },
     );
   }
 }
@@ -35,19 +41,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Layout(
-        body: Center(
-          child: Menu(
-            menus: [
-              {"page": Game(), "text": "New Game"},
-              {"page": Stats(), "text": "Stats"},
-              {"page": Settings(), "text": "Settings"},
-            ],
-          ),
+    return const Layout(
+      body: Center(
+        child: Menu(
+          menus: [
+            {"page": "/game", "text": "New Game"},
+            {"page": "/stats", "text": "Stats"},
+            {"page": "/settings", "text": "Settings"},
+          ],
         ),
       ),
     );

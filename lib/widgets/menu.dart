@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Menu extends StatelessWidget {
   const Menu({super.key, this.menus});
 
-  final List<Map<String, Object>>? menus;
+  final List<Map<String, String>>? menus;
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +15,7 @@ class Menu extends StatelessWidget {
           ...(menus)!.map((item) => Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               child: ElevatedButton(
-                onPressed: () => Navigator.push( // Pushes the page to the navigator
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => item["page"] as Widget
-                    )
-                ),
+                onPressed: () => Navigator.pushNamed(context, (item["page"] ??= "/")), // If null go to home page
                 child: Text(item["text"] as String),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(300, 40)
