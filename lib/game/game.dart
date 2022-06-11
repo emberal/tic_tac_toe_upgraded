@@ -42,6 +42,7 @@ class _GamePageState extends State<GamePage> {
     if (index != -1 &&
         p != _board[index].player &&
         _board[index].value < value) {
+
       setState(() {
         _board[index].value = value;
         _board[index].player = p;
@@ -173,6 +174,7 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      title: "Single-player game",
       body: Column(
         children: [
           Expanded(

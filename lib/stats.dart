@@ -33,6 +33,7 @@ class _StatsPageState extends State<StatsPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
+      title: "Stats",
       body: Container(
         width: double.infinity,
         child: Column(

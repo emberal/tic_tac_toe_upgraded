@@ -21,6 +21,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue, // Primary app colour
       ),
+      darkTheme: ThemeData(
+        // TODO
+      ),
       initialRoute: "/",
       routes: {
         "/": (context) => const MyHomePage(),
@@ -46,7 +49,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Menu(
           menus: [
-            {"page": "/game", "text": "New Game"},
+            {"page": "/game", "text": "New single-player game"},
+            // {"page": "null", "text": "New local multiplayer game"}, // TODO
+            // {"page": "null", "text": "New multiplayer game"}, // TODO
             {"page": "/stats", "text": "Stats"},
             {"page": "/settings", "text": "Settings"},
           ],
