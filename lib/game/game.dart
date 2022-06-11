@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_red.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 
@@ -6,19 +7,17 @@ import '../enums/player_enum.dart';
 import '../widgets/layout.dart';
 import '../objects/game_button.dart';
 
-class Game extends StatefulWidget {
-  const Game({super.key});
+class GamePage extends StatefulWidget {
+  const GamePage({super.key});
 
   @override
-  State<Game> createState() => _GameState();
+  State<GamePage> createState() => _GamePageState();
 }
 
-class _GameState extends State<Game> {
+class _GamePageState extends State<GamePage> {
   final _board = [];
-  PlayerRed? playerRed;
-  int? _activeNumber; // Is 'null' when no number is active
-
   final _values = [
+    // TODO change to regular List<bool>
     {"value": 1, "used": false},
     {"value": 2, "used": false},
     {"value": 3, "used": false},
@@ -26,32 +25,60 @@ class _GameState extends State<Game> {
     {"value": 5, "used": false}
   ];
 
-  _GameState() {
+  int _activeNumber = -1; // Is '-1' when no number is active
+  PlayerRed? playerRed;
+  Player winner = Player.none;
+
+  _GamePageState() {
     for (int i = 0; i < 9; i++) {
       _board.add(GameButton(index: i));
     }
     playerRed = PlayerRed(handlePress);
   }
 
-  void handlePress(int index, Player p) {
-    if (_board[index].value < _activeNumber) {
+  void handlePress(int index, int value, Player p) {
+    if (index != -1 &&
+        p != _board[index].player &&
+        _board[index].value < value) {
       setState(() {
-        _board[index].value = _activeNumber;
+        _board[index].value = value;
         _board[index].player = p;
       });
-      _values[_activeNumber! - 1]["used"] = true;
-      _activeNumber = null;
+
+      if (p == Player.blue) {
+        _values[value - 1]["used"] = true;
+        _activeNumber = -1;
+      }
 
       if (isComplete()) {
-        // TODO find winner, mark the winning area, update stats
+        // TODO mark the winning area, update stats
+        if (_fullBoard()) {
+          winner = Player.red;
+        } else {
+          winner = p;
+        }
+        setData(winner == Player.blue);
         showDialog(
           context: context,
-          builder: (BuildContext context) => const CompleteAlert(
-            title: "Congratulations",
-            text: "You win!",
+          builder: (BuildContext context) => CompleteAlert(
+            title: winner == Player.blue ? "Congratulations" : "You lost",
+            text: winner == Player.blue ? "You win!" : "Better luck next time",
           ),
         );
+      } else {
+        if (p == Player.blue) {
+          playerRed!.nextMove(_board); // Starts the other players move
+        }
       }
+    }
+  }
+
+  /// Saves the data to the local-storage, if [won] also updates "games-won"
+  Future<void> setData(bool won) async { // TODO update time spent
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt("games-played", (prefs.getInt("games-played") ?? 0) + 1);
+    if (won) {
+      prefs.setInt("games-won", (prefs.getInt("games-won") ?? 0) + 1);
     }
   }
 
@@ -64,7 +91,13 @@ class _GameState extends State<Game> {
   bool isComplete() {
     return _isCompleteHorizontal() ||
         _isCompleteVertical() ||
-        _isCompleteDiagonal();
+        _isCompleteDiagonal() ||
+        _fullBoard();
+  }
+
+  /// returns 'true' if all the squares on the board are used
+  bool _fullBoard() {
+    return _board.every((element) => element.value != 0);
   }
 
   /// Checks if at least one horizontal row is complete
@@ -76,6 +109,10 @@ class _GameState extends State<Game> {
         // Second and third column
         complete = _board[i].player != Player.none &&
             _board[i].player == _board[j].player;
+        if (!complete) {
+          // If the first 2 are false, the entire row i false
+          break;
+        }
       }
       if (complete) {
         return true;
@@ -93,6 +130,9 @@ class _GameState extends State<Game> {
         // Second and third row
         complete = _board[i].player != Player.none &&
             _board[i].player == _board[j].player;
+        if (!complete) {
+          break;
+        }
       }
       if (complete) {
         return true;
@@ -111,6 +151,9 @@ class _GameState extends State<Game> {
         // Iterates through the diagonals, first round the space is 4, then 2 (0-4-8, then 2-4-6)
         complete = _board[i].player != Player.none &&
             _board[i].player == _board[j].player;
+        if (!complete) {
+          break;
+        }
       }
       if (complete) {
         return true;
@@ -147,11 +190,11 @@ class _GameState extends State<Game> {
                                 "${element.value}",
                                 style: const TextStyle(color: Colors.black),
                               ),
-                              onPressed: () => _activeNumber == null
+                              onPressed: () => _activeNumber == -1
                                   ? null
                                   : {
-                                      handlePress(element.index, Player.blue),
-                                      playerRed!.nextMove(),
+                                      handlePress(element.index, _activeNumber,
+                                          Player.blue),
                                       // PlayerRed does it's next move
                                     },
                             ),

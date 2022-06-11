@@ -8,14 +8,24 @@ class PlayerRed {
     _used = List.filled(5, false);
   }
 
-  void nextMove() {
-    int useValue = 0;
+  void nextMove(List<dynamic> board) {
+    // TODO improve """AI"""
+    int useValue = 0, index = -1;
+
     for (int i = 0; i < _used.length; i++) {
       if (!_used[i]) {
-        useValue = i;
+        useValue = i + 1;
+        _used[i] = true;
         break;
       }
     }
-    handleMove!(useValue, Player.red); // TODO fix errors
+
+    for (int i = 0; i < board.length; i++) {
+      if (board[i].value < useValue && board[i].player != Player.red) {
+        index = i;
+        break;
+      }
+    }
+    handleMove!(index, useValue, Player.red);
   }
 }

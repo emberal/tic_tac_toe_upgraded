@@ -17,15 +17,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tic Tac Toe Upgraded',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue, // Primary app colour
       ),
       initialRoute: "/",
       routes: {
         "/": (context) => const MyHomePage(),
-        "/game": (context) => const Game(),
-        "/stats": (context) => const Stats(),
-        "/settings": (context) => const Settings(),
+        "/game": (context) => const GamePage(),
+        "/stats": (context) => const StatsPage(),
+        "/settings": (context) => const SettingsPage(),
       },
     );
   }

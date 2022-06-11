@@ -18,7 +18,7 @@ class CompleteAlert extends StatelessWidget {
         ),
         TextButton(
           onPressed: () => {
-            // empties the stack then adds a new game to the stack
+            // Empties the stack then adds a new game to the stack
             Navigator.of(context).popUntil((route) => route.isFirst),
             Navigator.pushNamed(context, "/game"),
           },
