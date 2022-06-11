@@ -16,6 +16,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   final _board = [];
+  final _time = Stopwatch(); // Used to time the matches
   final _values = [
     // TODO change to regular List<bool>
     {"value": 1, "used": false},
@@ -30,6 +31,7 @@ class _GamePageState extends State<GamePage> {
   Player winner = Player.none;
 
   _GamePageState() {
+    _time.start();
     for (int i = 0; i < 9; i++) {
       _board.add(GameButton(index: i));
     }
@@ -51,7 +53,8 @@ class _GamePageState extends State<GamePage> {
       }
 
       if (isComplete()) {
-        // TODO mark the winning area, update stats
+        _time.stop();
+        // TODO mark the winning area
         if (_fullBoard()) {
           winner = Player.red;
         } else {
@@ -74,9 +77,13 @@ class _GamePageState extends State<GamePage> {
   }
 
   /// Saves the data to the local-storage, if [won] also updates "games-won"
-  Future<void> setData(bool won) async { // TODO update time spent
+  Future<void> setData(bool won) async {
     final prefs = await SharedPreferences.getInstance();
+
     prefs.setInt("games-played", (prefs.getInt("games-played") ?? 0) + 1);
+    prefs.setInt("time-played",
+        (prefs.getInt("time-played") ?? 0) + _time.elapsed.inSeconds);
+
     if (won) {
       prefs.setInt("games-won", (prefs.getInt("games-won") ?? 0) + 1);
     }
