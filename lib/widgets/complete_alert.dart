@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CompleteAlert extends StatelessWidget {
-  const CompleteAlert({super.key, required this.title, required this.text});
+  const CompleteAlert({super.key, required this.title, required this.text, this.navigator = "/"});
 
-  final String title, text;
+  final String title, text, navigator;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class CompleteAlert extends StatelessWidget {
           onPressed: () => {
             // Empties the stack then adds a new game to the stack
             Navigator.of(context).popUntil((route) => route.isFirst),
-            Navigator.pushNamed(context, "/game"),
+            Navigator.pushNamed(context, navigator),
           },
           child: const Text("New Game"),
         ),

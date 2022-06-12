@@ -23,11 +23,11 @@ class PlayerRed {
     }
 
     for (int i = 0; i < board.length; i++) {
-      if (board[i].value < useValue && board[i].player != Player.red) {
+      if (board[i].value < useValue && board[i].player != Player.two) {
         index = i;
         break;
       }
     }
-    handleMove!(index, useValue, Player.red);
+    handleMove!(index, useValue, Player.two);
   }
 }
