@@ -21,7 +21,7 @@ class Board extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 400, // TODO dynamic based on height of each square
+      height: 390, // TODO dynamic based on height of each square
       child: GridView.count(
         crossAxisCount: size,
         children: board!

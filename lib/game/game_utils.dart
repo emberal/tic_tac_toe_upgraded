@@ -5,11 +5,21 @@ import '../enums/player_enum.dart';
 
 class GameUtils {
   /// Checks if a player has three in a row, or both players have used all moves
-  static bool isComplete(List<GameButton> board) {
+  static bool isComplete(
+      List<GameButton> board, List<Map<String, Object>> values) {
     return _isCompleteHorizontal(board) ||
         _isCompleteVertical(board) ||
         _isCompleteDiagonal(board) ||
+        isNoMoreMoves(values) ||
         fullBoard(board);
+  }
+
+  static bool isNoMoreMoves(List<Map<String, Object>> values) {
+    return values.every((element) =>
+        element[Player.one.toString()] as bool &&
+        (element[Player.two.toString()] != null
+            ? element[Player.two.toString()] as bool
+            : true));
   }
 
   /// returns 'true' if all the squares on the board are used
@@ -92,5 +102,4 @@ class GameUtils {
       prefs.setInt("games-won", (prefs.getInt("games-won") ?? 0) + 1);
     }
   }
-
 }

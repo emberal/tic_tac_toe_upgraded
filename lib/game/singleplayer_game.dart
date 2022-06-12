@@ -19,6 +19,7 @@ class SinglePlayerGamePage extends StatefulWidget {
 }
 
 class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements Game {
+
   @override
   List<GameButton> board = List.generate(MyApp.boardLength, (index) => GameButton(index: index));
   @override
@@ -56,15 +57,16 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements 
         _activeNumber = -1;
       }
 
-      if (GameUtils.isComplete(board)) {
+      if (GameUtils.isComplete(board, _values)) {
         _time.stop();
         // TODO mark the winning area
-        if (GameUtils.fullBoard(board)) {
+        if (GameUtils.fullBoard(board) || GameUtils.isNoMoreMoves(_values)) {
           winner = Player.two;
         } else {
           winner = player;
         }
         GameUtils.setData(winner == Player.one, _time);
+
         showDialog(
           context: context,
           builder: (BuildContext context) => CompleteAlert(

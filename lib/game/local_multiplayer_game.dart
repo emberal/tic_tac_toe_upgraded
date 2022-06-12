@@ -23,7 +23,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   List<GameButton> board =
       List.generate(MyApp.boardLength, (index) => GameButton(index: index));
   @override
-  Player winner = Player.none, turn = Player.one;
+  Player winner = Player.none;
+  Player turn = Player.one;
   final _time = Stopwatch();
   final _values = [
     {"value": 1, Player.one.toString(): false, Player.two.toString(): false},
@@ -70,10 +71,16 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         turn = Player.one;
       }
 
-      if (GameUtils.isComplete(board)) {
+      if (GameUtils.isComplete(board, _values)) {
         _time.stop();
 
-        Player winner = player;
+        Player winner;
+        if (GameUtils.fullBoard(board) || GameUtils.isNoMoreMoves(_values)) {
+          winner = Player.none;
+        }
+        else {
+          winner = player;
+        }
 
         // TODO Who won? if board isFull the both lost!
         GameUtils.setData(false, _time); // TODO
@@ -94,11 +101,15 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
       title: "Local multiplayer game",
       body: Column(
         children: [
-          SelectButtons(
-            setActiveNumber: setActiveNumber,
-            values: _values,
-            buttonColor: Player.two.color,
-            player: Player.two,
+          turn == Player.two ? const Icon(Icons.arrow_upward_sharp): const Text(""), // TODO Improve
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 50),
+            child: SelectButtons(
+              setActiveNumber: setActiveNumber,
+              values: _values,
+              buttonColor: Player.two.color,
+              player: Player.two,
+            ),
           ),
           Expanded(
             child: Container(
@@ -112,11 +123,15 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               ),
             ),
           ),
-          SelectButtons(
-            setActiveNumber: setActiveNumber,
-            values: _values,
-            player: Player.one,
-          )
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 50),
+            child: SelectButtons(
+              setActiveNumber: setActiveNumber,
+              values: _values,
+              player: Player.one,
+            ),
+          ),
+          turn == Player.one ? const Icon(Icons.arrow_downward_sharp) : const Text(""), // TODO Improve
         ],
       ),
     );

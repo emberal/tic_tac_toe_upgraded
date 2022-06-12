@@ -14,7 +14,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const boardLength = 9;
+  static const boardLength = 9, values = 5;
 
   /// This widget is the root of your application.
   @override
