@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_red.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
+import 'package:tic_tac_toe_upgraded/widgets/select_buttons.dart';
 
 import '../enums/player_enum.dart';
+import '../widgets/board.dart';
 import '../widgets/layout.dart';
 import '../objects/game_button.dart';
 
@@ -15,7 +17,7 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  final _board = [];
+  final List<GameButton> _board = [];
   final _time = Stopwatch(); // Used to time the matches
   final _values = [
     // TODO change to regular List<bool>
@@ -42,7 +44,6 @@ class _GamePageState extends State<GamePage> {
     if (index != -1 &&
         p != _board[index].player &&
         _board[index].value < value) {
-
       setState(() {
         _board[index].value = value;
         _board[index].player = p;
@@ -92,7 +93,9 @@ class _GamePageState extends State<GamePage> {
 
   /// Sets the next number to be used on the board
   void setActiveNumber(int value) {
-    _activeNumber = value;
+    setState(() {
+      _activeNumber = value;
+    });
   }
 
   /// Checks if a player has three in a row, or both players have used all moves
@@ -181,56 +184,20 @@ class _GamePageState extends State<GamePage> {
             child: Container(
               margin: const EdgeInsets.all(20),
               child: Center(
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  children: _board
-                      .map(
-                        (element) => Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                          ),
-                          child: Center(
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor:
-                                    (element as GameButton).player.color,
-                              ),
-                              child: Text(
-                                "${element.value}",
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              onPressed: () => _activeNumber == -1
-                                  ? null
-                                  : {
-                                      handlePress(element.index, _activeNumber,
-                                          Player.blue),
-                                      // PlayerRed does it's next move
-                                    },
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
+                child: Board(
+                  board: _board,
+                  pressHandler: handlePress,
+                  activeNumber: _activeNumber,
                 ),
               ),
             ),
           ),
-          Row(
-            // selectable values
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ..._values
-                  .map(
-                    (value) => TextButton(
-                      // If a value has been used already, do nothing
-                      onPressed: value["used"] as bool
-                          ? null
-                          : () => setActiveNumber(value["value"] as int),
-                      child: Text("${value["value"]}"),
-                    ),
-                  )
-                  .toList()
-            ],
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 50),
+            child: SelectButtons(
+              values: _values,
+              setActiveNumber: setActiveNumber,
+            ),
           ),
         ],
       ),

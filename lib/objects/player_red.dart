@@ -1,3 +1,5 @@
+import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
+
 import '../enums/player_enum.dart';
 
 class PlayerRed {
@@ -8,7 +10,7 @@ class PlayerRed {
     _used = List.filled(5, false);
   }
 
-  void nextMove(List<dynamic> board) {
+  void nextMove(List<GameButton> board) {
     // TODO improve """AI"""
     int useValue = 0, index = -1;
 
