@@ -94,6 +94,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               values: _playerTwo.usedValues,
               buttonColor: _playerTwo.color,
               player: _playerTwo,
+              offsetUp: false,
             ),
           ),
           Expanded(

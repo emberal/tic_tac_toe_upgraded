@@ -10,7 +10,8 @@ class SelectButtons extends StatefulWidget {
       this.values,
       this.setActiveNumber,
       this.buttonColor,
-      this.player});
+      this.player,
+      this.offsetUp = true});
 
   /// A [List] of [bool] describing which values have been used
   final List<bool>? values;
@@ -24,10 +25,14 @@ class SelectButtons extends StatefulWidget {
   /// The [Player] that will use the buttons
   final Player? player;
 
+  /// Whether the selected button will be pushed up or down, if 'true' it will
+  /// be pushed up, otherwise down
+  final bool offsetUp;
+
   @override
   State<SelectButtons> createState() => _SelectButtonsState();
 }
-// TODO show which button is selected
+
 class _SelectButtonsState extends State<SelectButtons> {
   @override
   Widget build(BuildContext context) {
@@ -38,19 +43,25 @@ class _SelectButtonsState extends State<SelectButtons> {
             .mapIndexed(
               (index, value) => Container(
                 margin: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(50, 50),
-                    maximumSize: const Size(64, 64),
-                    primary: widget.buttonColor,
+                child: Transform.translate(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(50, 50),
+                      maximumSize: const Size(64, 64),
+                      primary: widget.buttonColor,
+                    ),
+                    // If a value has been used already, do nothing
+                    onPressed: widget.player == null ||
+                            widget.player! is PlayerAI ||
+                            value
+                        ? null
+                        : () =>
+                            widget.setActiveNumber!(index + 1, widget.player),
+                    child: Text("${index + 1}"),
                   ),
-                  // If a value has been used already, do nothing
-                  onPressed: widget.player == null ||
-                          widget.player! is PlayerAI ||
-                          value
-                      ? null
-                      : () => widget.setActiveNumber!(index + 1, widget.player),
-                  child: Text("${index + 1}"),
+                  offset: widget.player?.activeNumber == index + 1
+                      ? Offset(0, widget.offsetUp ? -20 : 20)
+                      : const Offset(0, 0),
                 ),
               ),
             )
