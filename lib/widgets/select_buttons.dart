@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 
-import '../enums/player_enum.dart';
+import '../objects/player.dart';
 
 class SelectButtons extends StatefulWidget {
-  const SelectButtons({super.key, this.values, this.setActiveNumber, this.buttonColor, this.player = Player.none});
+  const SelectButtons(
+      {super.key,
+      this.values,
+      this.setActiveNumber,
+      this.buttonColor,
+      this.player});
 
-  final List<Map<String, Object>>? values;
+  /// A [List] of [bool] describing which values have been used
+  final List<bool>? values;
+
+  /// A [Function] that's called when one of the buttons are pressed
   final Function? setActiveNumber;
+
+  /// The [Color] of the buttons
   final Color? buttonColor;
-  final Player player;
+
+  /// The [Player] that will use the buttons
+  final Player? player;
 
   @override
   State<SelectButtons> createState() => _SelectButtonsState();
 }
-
+// TODO show which button is selected
 class _SelectButtonsState extends State<SelectButtons> {
   @override
   Widget build(BuildContext context) {
@@ -21,8 +35,8 @@ class _SelectButtonsState extends State<SelectButtons> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ...widget.values!
-            .map(
-              (value) => Container(
+            .mapIndexed(
+              (index, value) => Container(
                 margin: const EdgeInsets.all(10),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -31,14 +45,16 @@ class _SelectButtonsState extends State<SelectButtons> {
                     primary: widget.buttonColor,
                   ),
                   // If a value has been used already, do nothing
-                  onPressed: widget.player == Player.none || value[widget.player.toString()] as bool
+                  onPressed: widget.player == null ||
+                          widget.player! is PlayerAI ||
+                          value
                       ? null
-                      : () => widget.setActiveNumber!(value["value"] as int, widget.player), // TODO use correct player
-                  child: Text("${value["value"]}"),
+                      : () => widget.setActiveNumber!(index + 1, widget.player),
+                  child: Text("${index + 1}"),
                 ),
               ),
             )
-            .toList()
+            .toList(),
       ],
     );
   }

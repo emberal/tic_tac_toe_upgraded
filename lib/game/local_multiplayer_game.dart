@@ -7,7 +7,7 @@ import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 import 'package:tic_tac_toe_upgraded/widgets/select_buttons.dart';
 
-import '../enums/player_enum.dart';
+import '../objects/player.dart';
 import 'game.dart';
 
 class LocalMultiplayerGame extends StatefulWidget {
@@ -22,65 +22,46 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   @override
   List<GameButton> board =
       List.generate(MyApp.boardLength, (index) => GameButton(index: index));
-  @override
-  Player winner = Player.none;
-  Player turn = Player.one;
+
+  late Player _playerOne, _playerTwo;
   final _time = Stopwatch();
-  final _values = [
-    {"value": 1, Player.one.toString(): false, Player.two.toString(): false},
-    {"value": 2, Player.one.toString(): false, Player.two.toString(): false},
-    {"value": 3, Player.one.toString(): false, Player.two.toString(): false},
-    {"value": 4, Player.one.toString(): false, Player.two.toString(): false},
-    {"value": 5, Player.one.toString(): false, Player.two.toString(): false}
-  ];
-  int _activePlayerOne = -1, _activePlayerTwo = -1;
 
   _LocalMultiplayerGameState() {
+    _playerOne = Player(name: "Player1", color: Colors.blue, isTurn: true);
+    _playerTwo = Player(name: "Player2", color: Colors.red);
     _time.start();
   }
 
   @override
-  void setActiveNumber(int value, Player player) {
-    setState(() {
-      if (player == Player.one) {
-        _activePlayerOne = value;
-      } else {
-        _activePlayerTwo = value;
-      }
-    });
+  void setActiveNumber(int value, Player? player) {
+    setState(() => player?.activeNumber = value);
   }
 
   @override
   void handlePress(int index, int newValue, Player player) {
     if (index != -1 &&
         player != board[index].player &&
-        player == turn &&
+        player.isTurn &&
         board[index].value < newValue) {
       setState(() {
         board[index].value = newValue;
         board[index].player = player;
       });
 
-      if (player == Player.one) {
-        _values[newValue - 1][Player.one.toString()] = true;
-        _activePlayerOne = -1;
-        turn = Player.two;
-      } else {
-        _values[newValue - 1][Player.two.toString()] = true;
-        _activePlayerTwo = -1;
-        turn = Player.one;
-      }
+      player.usedValues[newValue - 1] = true;
+      player.activeNumber = -1;
 
-      if (GameUtils.isComplete(board, _values)) {
+      if (GameUtils.isComplete(
+          board, _playerOne.usedValues, _playerTwo.usedValues)) {
         _time.stop();
 
-        Player winner;
-        if (GameUtils.fullBoard(board) || GameUtils.isNoMoreMoves(_values)) {
-          winner = Player.none;
+        if (!(GameUtils.fullBoard(board) ||
+            GameUtils.isNoMoreMoves(_playerOne.usedValues) &&
+                GameUtils.isNoMoreMoves(_playerTwo.usedValues))) {
+          player.winner = true;
         }
-        else {
-          winner = player;
-        }
+
+        String winner = player.winner ? player.toString() : "No one";
 
         // TODO Who won? if board isFull the both lost!
         GameUtils.setData(false, _time); // TODO
@@ -91,6 +72,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                   text: "Rematch?",
                   navigator: "/lmp_game",
                 ));
+      } else {
+        GameUtils.switchTurn(_playerOne, _playerTwo);
       }
     }
   }
@@ -101,14 +84,16 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
       title: "Local multiplayer game",
       body: Column(
         children: [
-          turn == Player.two ? const Icon(Icons.arrow_upward_sharp): const Text(""), // TODO Improve
+          _playerTwo.isTurn
+              ? const Icon(Icons.arrow_upward_sharp)
+              : const Text(""), // TODO Improve
           Container(
             margin: const EdgeInsets.symmetric(vertical: 50),
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
-              values: _values,
-              buttonColor: Player.two.color,
-              player: Player.two,
+              values: _playerTwo.usedValues,
+              buttonColor: _playerTwo.color,
+              player: _playerTwo,
             ),
           ),
           Expanded(
@@ -116,9 +101,10 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               alignment: Alignment.center,
               child: Board(
                 pressHandler: handlePress,
-                activeNumber:
-                    turn == Player.one ? _activePlayerOne : _activePlayerTwo,
-                activePlayer: turn,
+                activeNumber: _playerOne.isTurn
+                    ? _playerOne.activeNumber
+                    : _playerTwo.activeNumber,
+                activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
               ),
             ),
@@ -127,11 +113,13 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             margin: const EdgeInsets.symmetric(vertical: 50),
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
-              values: _values,
-              player: Player.one,
+              values: _playerOne.usedValues,
+              player: _playerOne,
             ),
           ),
-          turn == Player.one ? const Icon(Icons.arrow_downward_sharp) : const Text(""), // TODO Improve
+          _playerOne.isTurn
+              ? const Icon(Icons.arrow_downward_sharp)
+              : const Text(""), // TODO Improve
         ],
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../enums/player_enum.dart';
+import '../objects/player.dart';
 import '../objects/game_button.dart';
 
 class Board extends StatelessWidget {
@@ -10,13 +10,13 @@ class Board extends StatelessWidget {
       this.size = 3,
       this.pressHandler,
       this.activeNumber = -1,
-      this.activePlayer = Player.one});
+      this.activePlayer});
 
   final List<GameButton>? board;
   final int size;
   final Function? pressHandler;
   final int activeNumber;
-  final Player activePlayer;
+  final Player? activePlayer;
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +39,7 @@ class Board extends StatelessWidget {
                 child: Center(
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: element.player != Player.one
-                          ? element.player.color
-                          : Theme.of(context).primaryColor,
+                      backgroundColor: element.player?.color,
                       minimumSize: const Size(50, 50),
                       maximumSize: const Size(64, 64),
                     ),
@@ -49,7 +47,7 @@ class Board extends StatelessWidget {
                       "${element.value}",
                       style: TextStyle(
                           // TODO better dynamic background colour
-                          color: element.player != Player.none
+                          color: element.player != null
                               ? Colors.white
                               : Colors.black),
                     ),

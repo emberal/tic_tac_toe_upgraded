@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/main.dart';
-import 'package:tic_tac_toe_upgraded/objects/player_red.dart';
+import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 import 'package:tic_tac_toe_upgraded/widgets/select_buttons.dart';
 
-import '../enums/player_enum.dart';
+import '../objects/player.dart';
 import '../widgets/board.dart';
 import '../widgets/layout.dart';
 import '../objects/game_button.dart';
@@ -18,28 +18,21 @@ class SinglePlayerGamePage extends StatefulWidget {
   State<SinglePlayerGamePage> createState() => _SinglePlayerGamePageState();
 }
 
-class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements Game {
-
+class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
+    implements Game {
   @override
-  List<GameButton> board = List.generate(MyApp.boardLength, (index) => GameButton(index: index));
-  @override
-  Player winner = Player.none;
+  List<GameButton> board =
+      List.generate(MyApp.boardLength, (index) => GameButton(index: index));
 
+  late Player _player;
+  late PlayerAI _playerAI;
   final _time = Stopwatch(); // Used to time the matches
-  final _values = [
-    {"value": 1, Player.one.toString(): false},
-    {"value": 2, Player.one.toString(): false},
-    {"value": 3, Player.one.toString(): false},
-    {"value": 4, Player.one.toString(): false},
-    {"value": 5, Player.one.toString(): false}
-  ];
-
-  int _activeNumber = -1; // Is '-1' when no number is active
-  PlayerRed? playerRed;
 
   _SinglePlayerGamePageState() {
+    _player = Player(name: "Player1", color: Colors.blue, isTurn: true);
+    _playerAI =
+        PlayerAI(handleMove: handlePress, name: "AI", color: Colors.red);
     _time.start();
-    playerRed = PlayerRed(handlePress);
   }
 
   @override
@@ -52,32 +45,28 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements 
         board[index].player = player;
       });
 
-      if (player == Player.one) {
-        _values[value - 1][Player.one.toString()] = true;
-        _activeNumber = -1;
-      }
+      player.usedValues[value - 1] = true;
+      player.activeNumber = -1;
 
-      if (GameUtils.isComplete(board, _values)) {
+      if (GameUtils.isComplete(
+          board, _player.usedValues, _playerAI.usedValues)) {
         _time.stop();
         // TODO mark the winning area
-        if (GameUtils.fullBoard(board) || GameUtils.isNoMoreMoves(_values)) {
-          winner = Player.two;
-        } else {
-          winner = player;
-        }
-        GameUtils.setData(winner == Player.one, _time);
+        player.winner = true;
+        GameUtils.setData(_player.winner, _time);
 
         showDialog(
           context: context,
           builder: (BuildContext context) => CompleteAlert(
-            title: winner == Player.one ? "Congratulations" : "You lost",
-            text: winner == Player.one ? "You win!" : "Better luck next time",
+            title: _player.winner ? "Congratulations" : "You lost",
+            text: _player.winner ? "You win!" : "Better luck next time",
             navigator: "/sp_game",
           ),
         );
       } else {
-        if (player == Player.one) {
-          playerRed!.nextMove(board); // Starts the other players move
+        GameUtils.switchTurn(_player, _playerAI);
+        if (_playerAI.isTurn) {
+          _playerAI.nextMove(board); // Starts the other players move
         }
       }
     }
@@ -85,10 +74,8 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements 
 
   /// Sets the next number to be used on the board
   @override
-  void setActiveNumber(int value, Player player) {
-    setState(() {
-      _activeNumber = value;
-    });
+  void setActiveNumber(int value, Player? player) {
+    setState(() => _player.activeNumber = value);
   }
 
   @override
@@ -104,7 +91,8 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements 
                 child: Board(
                   board: board,
                   pressHandler: handlePress,
-                  activeNumber: _activeNumber,
+                  activeNumber: _player.activeNumber,
+                  activePlayer: _player.isTurn ? _player : _playerAI,
                 ),
               ),
             ),
@@ -112,9 +100,9 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage> implements 
           Container(
             margin: const EdgeInsets.symmetric(vertical: 50),
             child: SelectButtons(
-              values: _values,
+              values: _player.usedValues,
               setActiveNumber: setActiveNumber,
-              player: Player.one,
+              player: _player,
             ),
           ),
         ],

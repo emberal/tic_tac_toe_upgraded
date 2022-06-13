@@ -1,25 +1,28 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
 
-import '../enums/player_enum.dart';
+import '../objects/player.dart';
 
 class GameUtils {
   /// Checks if a player has three in a row, or both players have used all moves
-  static bool isComplete(
-      List<GameButton> board, List<Map<String, Object>> values) {
-    return _isCompleteHorizontal(board) ||
-        _isCompleteVertical(board) ||
-        _isCompleteDiagonal(board) ||
-        isNoMoreMoves(values) ||
+  static bool isComplete(List<GameButton> board, List<bool> player1Values,
+      List<bool>? player2Values) {
+    return isThreeInARow(board) ||
+        (isNoMoreMoves(player1Values) &&
+            (player2Values != null ? isNoMoreMoves(player2Values) : true)) ||
         fullBoard(board);
   }
 
-  static bool isNoMoreMoves(List<Map<String, Object>> values) {
-    return values.every((element) =>
-        element[Player.one.toString()] as bool &&
-        (element[Player.two.toString()] != null
-            ? element[Player.two.toString()] as bool
-            : true));
+  /// Checks if there are three in a row on the [board]
+  static bool isThreeInARow(List<GameButton> board) {
+    return _isCompleteHorizontal(board) ||
+        _isCompleteVertical(board) ||
+        _isCompleteDiagonal(board);
+  }
+
+  /// Returns 'true' if all the values of a [Player] has been used
+  static bool isNoMoreMoves(List<bool> values) {
+    return values.every((element) => element);
   }
 
   /// returns 'true' if all the squares on the board are used
@@ -34,8 +37,8 @@ class GameUtils {
       bool complete = false;
       for (int j = i + 1; j % 3 != 0; j++) {
         // Second and third column
-        complete = board[i].player != Player.none &&
-            board[i].player == board[j].player;
+        complete =
+            board[i].player != null && board[i].player == board[j].player;
         if (!complete) {
           // If the first 2 are false, the entire row i false
           break;
@@ -55,8 +58,8 @@ class GameUtils {
       bool complete = false;
       for (int j = i + 3; j < board.length; j += 3) {
         // Second and third row
-        complete = board[i].player != Player.none &&
-            board[i].player == board[j].player;
+        complete =
+            board[i].player != null && board[i].player == board[j].player;
         if (!complete) {
           break;
         }
@@ -76,8 +79,8 @@ class GameUtils {
       bool complete = false;
       for (int j = i + space; j < board.length - i * space / 2; j += space) {
         // Iterates through the diagonals, first round the space is 4, then 2 (0-4-8, then 2-4-6)
-        complete = board[i].player != Player.none &&
-            board[i].player == board[j].player;
+        complete =
+            board[i].player != null && board[i].player == board[j].player;
         if (!complete) {
           break;
         }
@@ -101,5 +104,10 @@ class GameUtils {
     if (won) {
       prefs.setInt("games-won", (prefs.getInt("games-won") ?? 0) + 1);
     }
+  }
+
+  static void switchTurn(Player one, Player two) {
+    one.isTurn = !one.isTurn;
+    two.isTurn = !two.isTurn;
   }
 }
