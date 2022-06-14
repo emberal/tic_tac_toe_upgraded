@@ -9,8 +9,7 @@ class GameUtils {
       List<bool>? player2Values) {
     return isThreeInARow(board) ||
         (isNoMoreMoves(player1Values) &&
-            (player2Values != null ? isNoMoreMoves(player2Values) : true)) ||
-        fullBoard(board);
+            (player2Values != null ? isNoMoreMoves(player2Values) : true));
   }
 
   /// Checks if there are three in a row on the [board]
@@ -26,6 +25,7 @@ class GameUtils {
   }
 
   /// returns 'true' if all the squares on the board are used
+  @Deprecated("Game can continue as long as a Player has more moves")
   static bool fullBoard(List<GameButton> board) {
     return board.every((element) => element.value != 0);
   }

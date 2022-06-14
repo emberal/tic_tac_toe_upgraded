@@ -13,7 +13,45 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   void _setTheme() {}
 
-  void _toggleDarkTheme() {}
+  void _setDarkTheme() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => SimpleDialog(
+              title: const Text("Dark theme"),
+              children: [
+                SimpleDialogOption(
+                  onPressed: null, // TODO
+                  child: Row(
+                    children: [
+                      const Icon(Icons.brightness_4),
+                      Container(margin: const EdgeInsets.symmetric(horizontal: 10)),
+                      const Text("Follow system"),
+                    ],
+                  ),
+                ),
+                SimpleDialogOption(
+                  onPressed: null, // TODO
+                  child: Row(
+                    children: [
+                      const Icon(Icons.sunny),
+                      Container(margin: const EdgeInsets.symmetric(horizontal: 10)),
+                      const Text("Light theme"),
+                    ],
+                  ),
+                ),
+                SimpleDialogOption(
+                  onPressed: null, // TODO
+                  child: Row(
+                    children: [
+                      const Icon(Icons.dark_mode),
+                      Container(margin: const EdgeInsets.symmetric(horizontal: 10)),
+                      const Text("dark theme"),
+                    ],
+                  ),
+                ),
+              ],
+            ));
+  }
 
   void _deleteData() {
     showDialog(
@@ -23,9 +61,10 @@ class _SettingsPageState extends State<SettingsPage> {
         content: const Text("Are you sure you want to delete all data?"),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel")),
-          TextButton(onPressed: () async => _delete(), child: const Text("Ok")),
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(onPressed: () => _delete(), child: const Text("Ok")),
         ],
       ),
     );
@@ -57,11 +96,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: null, // TODO
               ),
               // Toggle dark theme
-              SettingsTile.switchTile(
+              SettingsTile(
                 title: const Text("Dark theme"),
                 leading: const Icon(Icons.dark_mode),
-                initialValue: false,
-                onToggle: null, // TODO
+                onPressed: (context) => _setDarkTheme(),
               ),
             ],
           ),

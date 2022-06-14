@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.martials.tic_tac_toe_upgraded.tic_tac_toe_upgraded">
    <application
-        android:label="tic_tac_toe_upgraded"
+        android:label="Tic-Tac-Toe Upgraded"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

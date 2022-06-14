@@ -55,9 +55,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
           board, _playerOne.usedValues, _playerTwo.usedValues)) {
         _time.stop();
 
-        if (!(GameUtils.fullBoard(board) ||
-            GameUtils.isNoMoreMoves(_playerOne.usedValues) &&
-                GameUtils.isNoMoreMoves(_playerTwo.usedValues))) {
+        // TODO Mark the winning area
+        if (GameUtils.isThreeInARow(board)) {
           player.winner = true;
         }
 
@@ -86,7 +85,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         children: [
           _playerTwo.isTurn
               ? const Icon(Icons.arrow_upward_sharp)
-              : const Text(""), // TODO Improve
+              : Container(),
           Container(
             margin: const EdgeInsets.symmetric(vertical: 50),
             child: SelectButtons(
@@ -99,6 +98,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
           ),
           Expanded(
             child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               child: Board(
                 pressHandler: handlePress,
@@ -120,7 +120,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
           ),
           _playerOne.isTurn
               ? const Icon(Icons.arrow_downward_sharp)
-              : const Text(""), // TODO Improve
+              : Container(),
         ],
       ),
     );

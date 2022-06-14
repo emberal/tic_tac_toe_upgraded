@@ -51,6 +51,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
       if (GameUtils.isComplete(
           board, _player.usedValues, _playerAI.usedValues)) {
         _time.stop();
+
         // TODO mark the winning area
         player.winner = true;
         GameUtils.setData(_player.winner, _time);

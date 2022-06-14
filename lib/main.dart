@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 import './game/singleplayer_game.dart';
@@ -49,19 +50,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  /// Returns the [PackageInfo] from [pubspec.yaml]
+  Future<PackageInfo> _getPackageInfo() async {
+    return await PackageInfo.fromPlatform();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Layout(
-      body: Center(
-        child: Menu(
-          menus: [
-            {"page": "/sp_game", "text": "New single-player game"},
-            {"page": "/lmp_game", "text": "New local multiplayer game"},
-            {"page": "/mp_game", "text": "New multiplayer game"},
-            {"page": "/stats", "text": "Stats"},
-            {"page": "/settings", "text": "Settings"},
-          ],
-        ),
+    return Layout(
+      body: Column(
+        children: [
+          const Center(
+            child: Menu(
+              menus: [
+                {"page": "/sp_game", "text": "New single-player game"},
+                {"page": "/lmp_game", "text": "New local multiplayer game"},
+                {"page": "/mp_game", "text": "New multiplayer game"},
+                {"page": "/stats", "text": "Stats"},
+                {"page": "/settings", "text": "Settings"},
+              ],
+            ),
+          ),
+          // Version number
+          FutureBuilder(
+            future: _getPackageInfo(),
+            builder:
+                (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+              return Text(
+                  "Version: ${snapshot.hasData ? snapshot.data?.version : "null"}");
+            },
+          ),
+        ],
       ),
     );
   }
