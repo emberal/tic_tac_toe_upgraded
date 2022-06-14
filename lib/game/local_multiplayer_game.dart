@@ -8,6 +8,7 @@ import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 import 'package:tic_tac_toe_upgraded/widgets/select_buttons.dart';
 
 import '../objects/player.dart';
+import '../widgets/blur.dart';
 import 'game.dart';
 
 class LocalMultiplayerGame extends StatefulWidget {
@@ -34,7 +35,9 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
   @override
   void setActiveNumber(int value, Player? player) {
-    setState(() => player?.activeNumber = value);
+    if (player != null && player.isTurn) {
+      setState(() => player.activeNumber = value);
+    }
   }
 
   @override
@@ -62,8 +65,10 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
         String winner = player.winner ? player.toString() : "No one";
 
-        // TODO Who won? if board isFull the both lost!
-        GameUtils.setData(false, _time); // TODO
+        GameUtils.setData(_playerOne.winner, _time,
+            timePlayed: "time-played-lmp",
+            gamesWon: "games-won-lmp",
+            gamesPlayed: "games-played-lmp");
         showDialog(
             context: context,
             builder: (BuildContext context) => CompleteAlert(
@@ -77,17 +82,17 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
     }
   }
 
+  final marginVertical = 30.0;
+
   @override
   Widget build(BuildContext context) {
     return Layout(
       title: "Local multiplayer game",
       body: Column(
         children: [
-          _playerTwo.isTurn
-              ? const Icon(Icons.arrow_upward_sharp)
-              : Container(),
+          _playerTwo.isTurn ? Blur(color: _playerTwo.color) : const Blur(),
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 50),
+            margin: EdgeInsets.symmetric(vertical: marginVertical),
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
               values: _playerTwo.usedValues,
@@ -102,25 +107,20 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               alignment: Alignment.center,
               child: Board(
                 pressHandler: handlePress,
-                activeNumber: _playerOne.isTurn
-                    ? _playerOne.activeNumber
-                    : _playerTwo.activeNumber,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
               ),
             ),
           ),
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 50),
+            margin: EdgeInsets.symmetric(vertical: marginVertical),
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
               values: _playerOne.usedValues,
               player: _playerOne,
             ),
           ),
-          _playerOne.isTurn
-              ? const Icon(Icons.arrow_downward_sharp)
-              : Container(),
+          _playerOne.isTurn ? Blur(color: _playerOne.color) : const Blur(),
         ],
       ),
     );

@@ -94,15 +94,20 @@ class GameUtils {
   }
 
   /// Saves the data to the local-storage, if [won] also updates "games-won"
-  static Future<void> setData(bool won, Stopwatch time) async {
+  static Future<void> setData(bool won, Stopwatch time,
+      {String? gamesPlayed, String? gamesWon, String? timePlayed}) async {
+
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.setInt("games-played", (prefs.getInt("games-played") ?? 0) + 1);
-    prefs.setInt("time-played",
-        (prefs.getInt("time-played") ?? 0) + time.elapsed.inSeconds);
-
-    if (won) {
-      prefs.setInt("games-won", (prefs.getInt("games-won") ?? 0) + 1);
+    if (gamesPlayed != null) {
+      prefs.setInt(gamesPlayed, (prefs.getInt(gamesPlayed) ?? 0) + 1);
+    }
+    if (timePlayed != null) {
+      prefs.setInt(
+          timePlayed, (prefs.getInt(timePlayed) ?? 0) + time.elapsed.inSeconds);
+    }
+    if (gamesWon != null && won) {
+      prefs.setInt(gamesWon, (prefs.getInt(gamesWon) ?? 0) + 1);
     }
   }
 

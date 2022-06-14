@@ -42,29 +42,29 @@ class _SelectButtonsState extends State<SelectButtons> {
         ...widget.values!
             .mapIndexed(
               (index, value) => Container(
-                margin: const EdgeInsets.all(10),
-                child: Transform.translate(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(50, 50),
-                      maximumSize: const Size(64, 64),
-                      primary: widget.buttonColor,
-                    ),
-                    // If a value has been used already, do nothing
-                    onPressed: widget.player == null ||
-                            widget.player! is PlayerAI ||
-                            value
-                        ? null
-                        : () =>
-                            widget.setActiveNumber!(index + 1, widget.player),
-                    child: Text("${index + 1}"),
-                  ),
-                  offset: widget.player?.activeNumber == index + 1
-                      ? Offset(0, widget.offsetUp ? -20 : 20)
-                      : const Offset(0, 0),
+            margin: const EdgeInsets.all(10),
+            child: Transform.translate(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(50, 50),
+                  maximumSize: const Size(64, 64),
+                  primary: widget.buttonColor,
                 ),
+                // If a value has been used already, do nothing
+                onPressed: widget.player == null ||
+                    widget.player! is PlayerAI ||
+                    value
+                    ? null
+                    : () => widget.setActiveNumber!(
+                    index + 1, widget.player),
+                child: Text("${index + 1}"),
               ),
-            )
+              offset: widget.player?.activeNumber == index + 1
+                  ? Offset(0, widget.offsetUp ? -20 : 20)
+                  : const Offset(0, 0),
+            ),
+          ),
+        )
             .toList(),
       ],
     );

@@ -24,7 +24,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     children: [
                       const Icon(Icons.brightness_4),
-                      Container(margin: const EdgeInsets.symmetric(horizontal: 10)),
+                      Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10)),
                       const Text("Follow system"),
                     ],
                   ),
@@ -34,7 +35,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     children: [
                       const Icon(Icons.sunny),
-                      Container(margin: const EdgeInsets.symmetric(horizontal: 10)),
+                      Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10)),
                       const Text("Light theme"),
                     ],
                   ),
@@ -44,7 +46,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     children: [
                       const Icon(Icons.dark_mode),
-                      Container(margin: const EdgeInsets.symmetric(horizontal: 10)),
+                      Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10)),
                       const Text("dark theme"),
                     ],
                   ),
@@ -74,9 +77,15 @@ class _SettingsPageState extends State<SettingsPage> {
     Navigator.pop(context);
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.remove("games-played");
-    prefs.remove("games-won");
-    prefs.remove("time-played");
+    prefs.remove("games-played-sp");
+    prefs.remove("games-won-sp");
+    prefs.remove("time-played-sp");
+    prefs.remove("games-played-lmp");
+    prefs.remove("games-won-lmp");
+    prefs.remove("time-played-lmp");
+    prefs.remove("games-played-mp");
+    prefs.remove("games-won-mp");
+    prefs.remove("time-played-mp");
   }
 
   @override
@@ -93,7 +102,7 @@ class _SettingsPageState extends State<SettingsPage> {
               SettingsTile.navigation(
                 title: const Text("Change theme"),
                 leading: const Icon(Icons.color_lens),
-                onPressed: null, // TODO
+                onPressed: (context) => _setTheme(),
               ),
               // Toggle dark theme
               SettingsTile(

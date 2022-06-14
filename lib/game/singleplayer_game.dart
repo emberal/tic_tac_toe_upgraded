@@ -54,7 +54,10 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
 
         // TODO mark the winning area
         player.winner = true;
-        GameUtils.setData(_player.winner, _time);
+        GameUtils.setData(_player.winner, _time,
+            gamesPlayed: "games-played-sp",
+            gamesWon: "games-won-sp",
+            timePlayed: "time-played-sp");
 
         showDialog(
           context: context,
@@ -92,7 +95,6 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
                 child: Board(
                   board: board,
                   pressHandler: handlePress,
-                  activeNumber: _player.activeNumber,
                   activePlayer: _player.isTurn ? _player : _playerAI,
                 ),
               ),
