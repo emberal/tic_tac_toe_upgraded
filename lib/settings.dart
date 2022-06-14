@@ -11,7 +11,15 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  void _setTheme() {}
+  void _setTheme() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) =>
+            const FullScreenDialog(title: "Change theme"),
+        fullscreenDialog: true,
+      ),
+    );
+  }
 
   void _setDarkTheme() {
     showDialog(
@@ -124,6 +132,21 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class FullScreenDialog extends StatelessWidget {
+  const FullScreenDialog({super.key, this.title = ""});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
       ),
     );
   }
