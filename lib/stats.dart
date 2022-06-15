@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
+import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 
 class StatsPage extends StatefulWidget {
@@ -46,7 +48,7 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     return Layout(
       title: "Stats",
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,10 +98,16 @@ class _Section extends StatelessWidget {
         children: [
           Container(
             alignment: Alignment.topLeft,
-            child: Text(title, textAlign: TextAlign.left),
+            child: Text(
+              title,
+              textAlign: TextAlign.left,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           ...?children,
-          const Divider(color: Colors.black),
+          Divider(
+            color: MyTheme.isDark(context) ? Colors.white : Colors.black,
+          ),
         ],
       ),
     );

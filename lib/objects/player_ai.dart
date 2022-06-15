@@ -7,8 +7,7 @@ class PlayerAI extends Player {
       super.name,
       super.color,
       super.activeNumber,
-      super.isTurn,
-      super.winner});
+      super.isTurn,});
 
   /// The [Function] that will be called from the [PlayerAI]
   final Function? handleMove;

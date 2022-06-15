@@ -4,7 +4,9 @@ import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
 import '../objects/player.dart';
 
 class GameUtils {
-  /// Checks if a player has three in a row, or both players have used all moves
+  static const boardLength = 9, numberOfValues = 5;
+
+  /// Checks if a [Player] has three in a row, or both [Player]'s have used all moves
   static bool isComplete(List<GameButton> board, List<bool> player1Values,
       List<bool>? player2Values) {
     return isThreeInARow(board) ||
@@ -96,7 +98,6 @@ class GameUtils {
   /// Saves the data to the local-storage, if [won] also updates "games-won"
   static Future<void> setData(bool won, Stopwatch time,
       {String? gamesPlayed, String? gamesWon, String? timePlayed}) async {
-
     final prefs = await SharedPreferences.getInstance();
 
     if (gamesPlayed != null) {

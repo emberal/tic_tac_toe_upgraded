@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../objects/player.dart';
+import '../objects/theme.dart';
 
 class Board extends StatelessWidget {
   const Board(
@@ -17,6 +18,8 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Is true if [globalTheme] is [dark] or it's [system] and [system] is dark
+    bool _isDark = MyTheme.isDark(context);
     return GridView.count(
       crossAxisCount: size,
       shrinkWrap: true,
@@ -26,10 +29,12 @@ class Board extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.symmetric(
                     vertical: element.index % 3 == 1
-                        ? const BorderSide()
+                        ? BorderSide(
+                            color: _isDark ? Colors.white : Colors.black)
                         : BorderSide.none,
                     horizontal: element.index >= 3 && element.index <= 5
-                        ? const BorderSide()
+                        ? BorderSide(
+                            color: _isDark ? Colors.white : Colors.black)
                         : BorderSide.none),
               ),
               child: Center(
@@ -43,8 +48,11 @@ class Board extends StatelessWidget {
                     "${element.value}",
                     style: TextStyle(
                       // TODO better dynamic background colour
-                      color:
-                          element.player != null ? Colors.white : Colors.black,
+                      color: _isDark
+                          ? Colors.white
+                          : element.player != null
+                              ? Colors.white
+                              : Colors.black,
                     ),
                   ),
                   onPressed: () =>

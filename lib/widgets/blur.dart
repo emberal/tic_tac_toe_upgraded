@@ -11,10 +11,7 @@ class Blur extends StatelessWidget {
       decoration: color != null
           ? BoxDecoration(
               boxShadow: [
-                BoxShadow(
-                    color: color!,
-                    blurRadius: 40,
-                    spreadRadius: 10)
+                BoxShadow(color: color!, blurRadius: 40, spreadRadius: 10)
               ],
             )
           : null,

@@ -22,7 +22,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
     implements Game {
   @override
   List<GameButton> board =
-      List.generate(MyApp.boardLength, (index) => GameButton(index: index));
+      List.generate(GameUtils.boardLength, (index) => GameButton(index: index));
 
   late Player _playerOne, _playerTwo;
   final _time = Stopwatch();
@@ -58,21 +58,25 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
           board, _playerOne.usedValues, _playerTwo.usedValues)) {
         _time.stop();
 
+        late final Player? winner;
         // TODO Mark the winning area
         if (GameUtils.isThreeInARow(board)) {
-          player.winner = true;
+          winner = player;
+        }
+        else {
+          winner = null;
         }
 
-        String winner = player.winner ? player.toString() : "No one";
+        String winnerString = winner != null ? player.toString() : "No one";
 
-        GameUtils.setData(_playerOne.winner, _time,
+        GameUtils.setData(winner == _playerOne, _time,
             timePlayed: "time-played-lmp",
             gamesWon: "games-won-lmp",
             gamesPlayed: "games-played-lmp");
         showDialog(
             context: context,
             builder: (BuildContext context) => CompleteAlert(
-                  title: "$winner won the match",
+                  title: "$winnerString won the match",
                   text: "Rematch?",
                   navigator: "/lmp_game",
                 ));

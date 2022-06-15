@@ -22,7 +22,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
     implements Game {
   @override
   List<GameButton> board =
-      List.generate(MyApp.boardLength, (index) => GameButton(index: index));
+      List.generate(GameUtils.boardLength, (index) => GameButton(index: index));
 
   late Player _player;
   late PlayerAI _playerAI;
@@ -53,8 +53,8 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         _time.stop();
 
         // TODO mark the winning area
-        player.winner = true;
-        GameUtils.setData(_player.winner, _time,
+        final winner = player;
+        GameUtils.setData(winner == _player, _time,
             gamesPlayed: "games-played-sp",
             gamesWon: "games-won-sp",
             timePlayed: "time-played-sp");
@@ -62,8 +62,8 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         showDialog(
           context: context,
           builder: (BuildContext context) => CompleteAlert(
-            title: _player.winner ? "Congratulations" : "You lost",
-            text: _player.winner ? "You win!" : "Better luck next time",
+            title: winner != _playerAI ? "Congratulations" : "You lost",
+            text: winner != _playerAI ? "You win!" : "Better luck next time",
             navigator: "/sp_game",
           ),
         );
