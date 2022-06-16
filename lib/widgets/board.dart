@@ -7,13 +7,20 @@ class Board extends StatelessWidget {
   const Board(
       {super.key,
       this.board,
-      this.size = 3,
+      this.width = 3,
       this.pressHandler,
       this.activePlayer});
 
+  /// A [List] of objects that will be placed on the [board]
   final List<dynamic>? board;
-  final int size;
+
+  /// The [width] of the [board]
+  final int width;
+
+  /// The [Function] that will be called upon pressing one of the buttons on the [board]
   final Function? pressHandler;
+
+  /// The [Player] currently in control of the [board]
   final Player? activePlayer;
 
   @override
@@ -21,7 +28,7 @@ class Board extends StatelessWidget {
     // Is true if [globalTheme] is [dark] or it's [system] and [system] is dark
     bool _isDark = MyTheme.isDark(context);
     return GridView.count(
-      crossAxisCount: size,
+      crossAxisCount: width,
       shrinkWrap: true,
       children: board!
           .map(

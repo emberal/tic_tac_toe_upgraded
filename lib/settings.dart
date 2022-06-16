@@ -6,13 +6,14 @@ import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key, this.themeModeCallback, this.themeCallback});
+  const SettingsPage(
+      {super.key, this.themeModeCallback, this.colorPickerDialog});
 
   /// Changes the [ThemeMode] to 'light', 'dark' or 'system'
   final Function(ThemeMode)? themeModeCallback;
 
   /// changes various themes around the app
-  final Function? themeCallback;
+  final Function? colorPickerDialog;
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -23,7 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => FullScreenDialog(
-            title: "Change theme", themeCallback: widget.themeCallback),
+            title: "Change theme", colorPickerDialog: widget.colorPickerDialog),
         fullscreenDialog: true,
       ),
     );
@@ -159,63 +160,19 @@ class _DialogOption extends StatelessWidget {
 }
 
 class FullScreenDialog extends StatefulWidget {
-  const FullScreenDialog({super.key, this.title = "", this.themeCallback});
+  const FullScreenDialog({super.key, this.title = "", this.colorPickerDialog});
 
+  /// The [title] in the [AppBar]
   final String title;
 
-  final Function? themeCallback;
+  /// The [Function] that opens the [colorPickerDialog]
+  final Function? colorPickerDialog;
 
   @override
   State<FullScreenDialog> createState() => _FullScreenDialogState();
 }
 
 class _FullScreenDialogState extends State<FullScreenDialog> {
-  Future<bool> colorPickerDialog(Color startColor) async {
-    return ColorPicker(
-      // Start color.
-      color: startColor,
-      // Update the dialogPickerColor using the callback.
-      onColorChanged: (Color color) => setState(() => startColor = color), // TODO call function
-      width: 40,
-      height: 40,
-      borderRadius: 4,
-      spacing: 5,
-      runSpacing: 5,
-      wheelDiameter: 155,
-      heading: Text(
-        'Select color',
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
-      subheading: Text(
-        'Select color shade',
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
-      wheelSubheading: Text(
-        'Selected color and its shades',
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
-      showMaterialName: true,
-      showColorName: true,
-      showColorCode: true,
-      materialNameTextStyle: Theme.of(context).textTheme.caption,
-      colorNameTextStyle: Theme.of(context).textTheme.caption,
-      colorCodeTextStyle: Theme.of(context).textTheme.caption,
-      pickersEnabled: const <ColorPickerType, bool>{
-        ColorPickerType.both: false,
-        ColorPickerType.primary: true,
-        ColorPickerType.accent: true,
-        ColorPickerType.bw: false,
-        ColorPickerType.custom: false,
-        ColorPickerType.wheel: true,
-      },
-      //customColorSwatchesAndNames: colorsNameMap,
-    ).showPickerDialog(
-      context,
-      constraints:
-          const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Layout(
@@ -225,13 +182,13 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
         sections: [
           _SettingsSectionTheme(
             title: const Text("Light theme"),
-            onPressed: widget.themeCallback,
+            onPressed: widget.colorPickerDialog,
             tiles: const [],
           ),
           _SettingsSectionTheme(
             title: const Text("Dark theme"),
+            onPressed: widget.colorPickerDialog,
             changeDark: true,
-            onPressed: widget.themeCallback,
             tiles: const [],
           ),
           SettingsSection(
@@ -239,16 +196,18 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
             tiles: [
               SettingsTile(
                 title: const Text("Player1 colours"),
-                onPressed: widget.themeCallback != null
-                    ? (context) => widget.themeCallback!(true,
-                        player1: colorPickerDialog(MyTheme.player1Color))
+                leading: ColorIndicator(color: MyTheme.player1Color.object),
+                onPressed: widget.colorPickerDialog != null
+                    ? (context) =>
+                        widget.colorPickerDialog!(MyTheme.player1Color, context)
                     : null,
               ),
               SettingsTile(
                 title: const Text("Player2 colours"),
-                onPressed: widget.themeCallback != null
-                    ? (context) => widget.themeCallback!(true,
-                        player2: colorPickerDialog(MyTheme.player2Color))
+                leading: ColorIndicator(color: MyTheme.player2Color.object),
+                onPressed: widget.colorPickerDialog != null
+                    ? (context) =>
+                        widget.colorPickerDialog!(MyTheme.player2Color, context)
                     : null,
               ),
             ],
@@ -258,21 +217,6 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
     );
   }
 }
-
-class _ColorPickerDialog extends StatefulWidget {
-  const _ColorPickerDialog();
-
-  @override
-  State<_ColorPickerDialog> createState() => _ColorPickerDialogState();
-}
-
-class _ColorPickerDialogState extends State<_ColorPickerDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
 
 class _SettingsSectionTheme extends SettingsSection {
   const _SettingsSectionTheme(
@@ -284,6 +228,7 @@ class _SettingsSectionTheme extends SettingsSection {
   /// Whether or not this section is for changing dark mode settings
   final bool changeDark;
 
+  /// The [Function] that will be called when one either option is pressed
   final Function? onPressed;
 
   @override
@@ -291,24 +236,45 @@ class _SettingsSectionTheme extends SettingsSection {
     return SettingsSection(
       title: title,
       tiles: [
-        SettingsTile(
-          title: const Text("Appbar"),
-          onPressed: onPressed != null
-              ? (context) => onPressed!(changeDark, appBar: Colors.green)
-              : null,
-        ),
+        // SettingsTile(
+        //   title: const Text("Appbar"),
+        //   leading: ColorIndicator(
+        //     color: changeDark
+        //         ? MyTheme.appBarColorsDark.object
+        //         : MyTheme.appBarColorsLight.object,
+        //   ),
+        //   onPressed: onPressed != null
+        //       ? (context) => onPressed!(changeDark
+        //           ? MyTheme.appBarColorsDark
+        //           : MyTheme.appBarColorsLight, context)
+        //       : null,
+        // ),
         SettingsTile(
           title: const Text("Primary colours"),
+          leading: ColorIndicator(
+            color: changeDark
+                ? MyTheme.primaryColorsDark.object
+                : MyTheme.primaryColorsLight.object,
+          ),
           onPressed: onPressed != null
-              ? (context) => onPressed!(changeDark, primary: Colors.green)
+              ? (context) => onPressed!(
+                  changeDark
+                      ? MyTheme.primaryColorsDark
+                      : MyTheme.primaryColorsLight,
+                  context)
               : null,
         ),
-        SettingsTile(
-          title: const Text("Background"),
-          onPressed: onPressed != null
-              ? (context) => onPressed!(changeDark, background: Colors.green)
-              : null,
-        ),
+        // SettingsTile(
+        //   title: const Text("Background"),
+        //   leading: ColorIndicator(
+        //     color:
+        //         changeDark ? MyTheme.backgroundDark.object : MyTheme.backgroundLight.object,
+        //   ),
+        //   onPressed: onPressed != null
+        //       ? (context) => onPressed!(
+        //           changeDark ? MyTheme.backgroundDark : MyTheme.backgroundLight, context)
+        //       : null,
+        // ),
         ...tiles
       ],
     );

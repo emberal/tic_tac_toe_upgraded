@@ -31,8 +31,7 @@ class SelectButtons extends StatefulWidget {
   /// The [Player] that will use the buttons
   final Player? player;
 
-  /// Whether the selected button will be pushed up or down, if 'true' it will
-  /// be pushed up, otherwise down
+  /// Whether the selected button will be pushed up or down, if 'true' it will be pushed up, otherwise down
   final bool offsetUp;
 
   @override

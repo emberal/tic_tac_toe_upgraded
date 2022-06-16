@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
-import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/board.dart';
@@ -29,8 +28,9 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   final _time = Stopwatch();
 
   _LocalMultiplayerGameState() {
-    _playerOne = Player(name: "Player1", color: MyTheme.player1Color, isTurn: true);
-    _playerTwo = Player(name: "Player2", color: MyTheme.player2Color);
+    _playerOne = Player(
+        name: "Player1", color: MyTheme.player1Color.object, isTurn: true);
+    _playerTwo = Player(name: "Player2", color: MyTheme.player2Color.object);
     _time.start();
   }
 
@@ -63,8 +63,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         // TODO Mark the winning area
         if (GameUtils.isThreeInARow(board)) {
           winner = player;
-        }
-        else {
+        } else {
           winner = null;
         }
 

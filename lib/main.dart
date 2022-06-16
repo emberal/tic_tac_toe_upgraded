@@ -1,3 +1,4 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
@@ -24,25 +25,51 @@ class _MyAppState extends State<MyApp> {
   void changeTheme(ThemeMode mode) =>
       setState(() => MyTheme.setGlobalTheme(mode));
 
-  void changeColors(bool changeDarkMode,
-      {Color? appBar,
-      Color? primary,
-      Color? background,
-      Color? player1,
-      Color? player2}) {
-    setState(() {
-      if (changeDarkMode) {
-        appBar != null ? MyTheme.appBarColorsDark = appBar : null;
-        primary != null ? MyTheme.primaryColorsDark = primary : null;
-        background != null ? MyTheme.backgroundDark = background : null;
-      } else {
-        appBar != null ? MyTheme.appBarColorsLight = appBar : null;
-        primary != null ? MyTheme.primaryColorsLight = primary : null;
-        background != null ? MyTheme.backgroundLight = background : null;
-      }
-      player1 != null ? MyTheme.player1Color = player1 : null;
-      player2 != null ? MyTheme.player2Color = player2 : null;
-    });
+  /// Creates a [ColorPickerDialog] that can be used to change colours for certain materials
+  Future<bool> colorPickerDialog(Wrapper<Color> material, BuildContext context) async {
+    return ColorPicker(
+      // Start color.
+      color: material.object,
+      // Update the dialogPickerColor using the callback.
+      onColorChanged: (Color color) => setState(() => material.object = color), // TODO save colors after change
+      width: 40,
+      height: 40,
+      borderRadius: 4,
+      spacing: 5,
+      runSpacing: 5,
+      wheelDiameter: 155,
+      heading: Text(
+        'Select color',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      subheading: Text(
+        'Select color shade',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      wheelSubheading: Text(
+        'Selected color and its shades',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      showMaterialName: true,
+      showColorName: true,
+      showColorCode: false,
+      materialNameTextStyle: Theme.of(context).textTheme.caption,
+      colorNameTextStyle: Theme.of(context).textTheme.caption,
+      colorCodeTextStyle: Theme.of(context).textTheme.caption,
+      pickersEnabled: const <ColorPickerType, bool>{
+        ColorPickerType.both: false,
+        ColorPickerType.primary: true,
+        ColorPickerType.accent: true,
+        ColorPickerType.bw: false,
+        ColorPickerType.custom: false,
+        ColorPickerType.wheel: true,
+      },
+      //customColorSwatchesAndNames: colorsNameMap,
+    ).showPickerDialog(
+      context,
+      constraints:
+      const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
+    );
   }
 
   @override
@@ -65,13 +92,13 @@ class _MyAppState extends State<MyApp> {
           themeMode: theme,
           theme: ThemeData(
             colorScheme: ColorScheme.light(
-                primary: MyTheme.primaryColorsLight,
-                background: MyTheme.backgroundLight),
+                primary: MyTheme.primaryColorsLight.object,
+                background: MyTheme.backgroundLight.object),
           ),
           darkTheme: ThemeData(
             colorScheme: ColorScheme.dark(
-                primary: MyTheme.primaryColorsDark,
-                background: MyTheme.backgroundDark),
+                primary: MyTheme.primaryColorsDark.object,
+                background: MyTheme.backgroundDark.object),
           ),
           initialRoute: "/",
           routes: {
@@ -80,8 +107,8 @@ class _MyAppState extends State<MyApp> {
             "/lmp_game": (context) => const LocalMultiplayerGame(),
             "/mp_game": (context) => const MultiplayerGame(),
             "/stats": (context) => const StatsPage(),
-            "/settings": (context) => SettingsPage(
-                themeModeCallback: changeTheme, themeCallback: changeColors),
+            "/settings": (context) =>
+                SettingsPage(themeModeCallback: changeTheme, colorPickerDialog: colorPickerDialog),
           },
         );
       },
