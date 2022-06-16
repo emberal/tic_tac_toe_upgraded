@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
+import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/board.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
@@ -28,8 +29,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   final _time = Stopwatch();
 
   _LocalMultiplayerGameState() {
-    _playerOne = Player(name: "Player1", color: Colors.blue, isTurn: true);
-    _playerTwo = Player(name: "Player2", color: Colors.red);
+    _playerOne = Player(name: "Player1", color: MyTheme.player1Color, isTurn: true);
+    _playerTwo = Player(name: "Player2", color: MyTheme.player2Color);
     _time.start();
   }
 
@@ -99,8 +100,6 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             margin: EdgeInsets.symmetric(vertical: marginVertical),
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
-              values: _playerTwo.usedValues,
-              buttonColor: _playerTwo.color,
               player: _playerTwo,
               offsetUp: false,
             ),
@@ -120,7 +119,6 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             margin: EdgeInsets.symmetric(vertical: marginVertical),
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
-              values: _playerOne.usedValues,
               player: _playerOne,
             ),
           ),

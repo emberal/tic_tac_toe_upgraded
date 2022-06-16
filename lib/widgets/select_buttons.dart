@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
+import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 
 import '../objects/player.dart';
+
+// TODO drag and drop buttons to the correct position
 
 class SelectButtons extends StatefulWidget {
   const SelectButtons(
@@ -14,12 +18,14 @@ class SelectButtons extends StatefulWidget {
       this.offsetUp = true});
 
   /// A [List] of [bool] describing which values have been used
+  @Deprecated("Unnecessary")
   final List<bool>? values;
 
   /// A [Function] that's called when one of the buttons are pressed
   final Function? setActiveNumber;
 
   /// The [Color] of the buttons
+  @Deprecated("Unnecessary")
   final Color? buttonColor;
 
   /// The [Player] that will use the buttons
@@ -39,32 +45,32 @@ class _SelectButtonsState extends State<SelectButtons> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ...widget.values!
+        ...?widget.player?.usedValues
             .mapIndexed(
               (index, value) => Container(
-            margin: const EdgeInsets.all(10),
-            child: Transform.translate(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(50, 50),
-                  maximumSize: const Size(64, 64),
-                  primary: widget.buttonColor,
+                margin: const EdgeInsets.all(10),
+                child: Transform.translate(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(50, 50),
+                      maximumSize: const Size(64, 64),
+                      primary: widget.player?.color,
+                    ),
+                    // If a value has been used already, do nothing
+                    onPressed: widget.player == null ||
+                            widget.player! is PlayerAI ||
+                            value
+                        ? null
+                        : () =>
+                            widget.setActiveNumber!(index + 1, widget.player),
+                    child: Text("${index + 1}"),
+                  ),
+                  offset: widget.player?.activeNumber == index + 1
+                      ? Offset(0, widget.offsetUp ? -20 : 20)
+                      : const Offset(0, 0),
                 ),
-                // If a value has been used already, do nothing
-                onPressed: widget.player == null ||
-                    widget.player! is PlayerAI ||
-                    value
-                    ? null
-                    : () => widget.setActiveNumber!(
-                    index + 1, widget.player),
-                child: Text("${index + 1}"),
               ),
-              offset: widget.player?.activeNumber == index + 1
-                  ? Offset(0, widget.offsetUp ? -20 : 20)
-                  : const Offset(0, 0),
-            ),
-          ),
-        )
+            )
             .toList(),
       ],
     );

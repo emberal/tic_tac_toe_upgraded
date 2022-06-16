@@ -3,6 +3,7 @@ import 'package:tic_tac_toe_upgraded/game/game.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
+import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 import 'package:tic_tac_toe_upgraded/widgets/select_buttons.dart';
 
@@ -29,9 +30,9 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
   final _time = Stopwatch(); // Used to time the matches
 
   _SinglePlayerGamePageState() {
-    _player = Player(name: "Player1", color: Colors.blue, isTurn: true);
+    _player = Player(name: "Player1", color: MyTheme.player1Color, isTurn: true);
     _playerAI =
-        PlayerAI(handleMove: handlePress, name: "AI", color: Colors.red);
+        PlayerAI(handleMove: handlePress, name: "AI", color: MyTheme.player2Color);
     _time.start();
   }
 

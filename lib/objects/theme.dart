@@ -22,6 +22,9 @@ abstract class MyTheme {
     return prefs.getString("global-theme") ?? ThemeMode.system.toString();
   }
 
+  // TODO see which ones are usable
+  static Color appBarColorsLight = Colors.blue;
+  static Color appBarColorsDark = const Color(0xff121212);
   static Color primaryColorsLight = Colors.blue;
   static Color primaryColorsDark = Colors.blue;
   static Color backgroundLight = Colors.white;

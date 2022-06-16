@@ -25,12 +25,18 @@ class _MyAppState extends State<MyApp> {
       setState(() => MyTheme.setGlobalTheme(mode));
 
   void changeColors(bool changeDarkMode,
-      {Color? primary, Color? background, Color? player1, Color? player2}) {
+      {Color? appBar,
+      Color? primary,
+      Color? background,
+      Color? player1,
+      Color? player2}) {
     setState(() {
       if (changeDarkMode) {
+        appBar != null ? MyTheme.appBarColorsDark = appBar : null;
         primary != null ? MyTheme.primaryColorsDark = primary : null;
         background != null ? MyTheme.backgroundDark = background : null;
       } else {
+        appBar != null ? MyTheme.appBarColorsLight = appBar : null;
         primary != null ? MyTheme.primaryColorsLight = primary : null;
         background != null ? MyTheme.backgroundLight = background : null;
       }
@@ -44,19 +50,28 @@ class _MyAppState extends State<MyApp> {
     return FutureBuilder(
       future: MyTheme.getSavedTheme(),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        return MaterialApp(
-          title: 'Tic-Tac-Toe Upgraded',
-          debugShowCheckedModeBanner: false,
-          themeMode: snapshot.data == ThemeMode.light.toString()
+        late ThemeMode theme = ThemeMode.system;
+        if (snapshot.hasData) {
+          theme = snapshot.data == ThemeMode.light.toString()
               ? ThemeMode.light
               : snapshot.data == ThemeMode.dark.toString()
                   ? ThemeMode.dark
-                  : ThemeMode.system,
+                  : ThemeMode.system;
+          MyTheme.setGlobalTheme(theme);
+        }
+        return MaterialApp(
+          title: 'Tic-Tac-Toe Upgraded',
+          debugShowCheckedModeBanner: false,
+          themeMode: theme,
           theme: ThemeData(
-            colorScheme: ColorScheme.light(primary: MyTheme.primaryColorsLight),
+            colorScheme: ColorScheme.light(
+                primary: MyTheme.primaryColorsLight,
+                background: MyTheme.backgroundLight),
           ),
           darkTheme: ThemeData(
-            colorScheme: ColorScheme.dark(primary: MyTheme.primaryColorsDark),
+            colorScheme: ColorScheme.dark(
+                primary: MyTheme.primaryColorsDark,
+                background: MyTheme.backgroundDark),
           ),
           initialRoute: "/",
           routes: {
@@ -65,8 +80,8 @@ class _MyAppState extends State<MyApp> {
             "/lmp_game": (context) => const LocalMultiplayerGame(),
             "/mp_game": (context) => const MultiplayerGame(),
             "/stats": (context) => const StatsPage(),
-            "/settings": (context) =>
-                SettingsPage(themeModeCallback: changeTheme, themeCallback: changeColors),
+            "/settings": (context) => SettingsPage(
+                themeModeCallback: changeTheme, themeCallback: changeColors),
           },
         );
       },

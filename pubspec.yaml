@@ -29,9 +29,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ">=2.0.15" # Local-storage
-  settings_ui: ">=2.0.2"
-  package_info_plus: ">=1.4.2" # Used to get data from this file
+  shared_preferences: ^2.0.15 # Local-storage
+  settings_ui: ^2.0.2
+  package_info_plus: ^1.4.2 # Used to get data from this file
+  flex_color_picker: ^2.5.0
+
 
 
   # The following adds the Cupertino Icons font to your application.

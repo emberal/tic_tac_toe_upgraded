@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, this.themeModeCallback, this.themeCallback});
@@ -156,12 +158,63 @@ class _DialogOption extends StatelessWidget {
   }
 }
 
-class FullScreenDialog extends StatelessWidget {
+class FullScreenDialog extends StatefulWidget {
   const FullScreenDialog({super.key, this.title = "", this.themeCallback});
 
   final String title;
 
   final Function? themeCallback;
+
+  @override
+  State<FullScreenDialog> createState() => _FullScreenDialogState();
+}
+
+class _FullScreenDialogState extends State<FullScreenDialog> {
+  Future<bool> colorPickerDialog(Color startColor) async {
+    return ColorPicker(
+      // Start color.
+      color: startColor,
+      // Update the dialogPickerColor using the callback.
+      onColorChanged: (Color color) => setState(() => startColor = color), // TODO call function
+      width: 40,
+      height: 40,
+      borderRadius: 4,
+      spacing: 5,
+      runSpacing: 5,
+      wheelDiameter: 155,
+      heading: Text(
+        'Select color',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      subheading: Text(
+        'Select color shade',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      wheelSubheading: Text(
+        'Selected color and its shades',
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+      showMaterialName: true,
+      showColorName: true,
+      showColorCode: true,
+      materialNameTextStyle: Theme.of(context).textTheme.caption,
+      colorNameTextStyle: Theme.of(context).textTheme.caption,
+      colorCodeTextStyle: Theme.of(context).textTheme.caption,
+      pickersEnabled: const <ColorPickerType, bool>{
+        ColorPickerType.both: false,
+        ColorPickerType.primary: true,
+        ColorPickerType.accent: true,
+        ColorPickerType.bw: false,
+        ColorPickerType.custom: false,
+        ColorPickerType.wheel: true,
+      },
+      //customColorSwatchesAndNames: colorsNameMap,
+    ).showPickerDialog(
+      context,
+      constraints:
+          const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,26 +223,33 @@ class FullScreenDialog extends StatelessWidget {
       showMenuButton: false,
       body: SettingsList(
         sections: [
-          const _SettingsSectionTheme(
-            title: Text("Light theme"),
-            tiles: [],
+          _SettingsSectionTheme(
+            title: const Text("Light theme"),
+            onPressed: widget.themeCallback,
+            tiles: const [],
           ),
-          const _SettingsSectionTheme(
-            title: Text("Dark theme"),
+          _SettingsSectionTheme(
+            title: const Text("Dark theme"),
             changeDark: true,
-            tiles: [],
+            onPressed: widget.themeCallback,
+            tiles: const [],
           ),
           SettingsSection(
             title: const Text("Players"),
             tiles: [
               SettingsTile(
                 title: const Text("Player1 colours"),
-                onPressed: themeCallback != null
-                    ? (context) => themeCallback!(false, player1: null) // TODO colour picker
+                onPressed: widget.themeCallback != null
+                    ? (context) => widget.themeCallback!(true,
+                        player1: colorPickerDialog(MyTheme.player1Color))
                     : null,
               ),
               SettingsTile(
                 title: const Text("Player2 colours"),
+                onPressed: widget.themeCallback != null
+                    ? (context) => widget.themeCallback!(true,
+                        player2: colorPickerDialog(MyTheme.player2Color))
+                    : null,
               ),
             ],
           ),
@@ -199,12 +259,32 @@ class FullScreenDialog extends StatelessWidget {
   }
 }
 
+class _ColorPickerDialog extends StatefulWidget {
+  const _ColorPickerDialog();
+
+  @override
+  State<_ColorPickerDialog> createState() => _ColorPickerDialogState();
+}
+
+class _ColorPickerDialogState extends State<_ColorPickerDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+
 class _SettingsSectionTheme extends SettingsSection {
   const _SettingsSectionTheme(
-      {super.title, required super.tiles, this.changeDark = false});
+      {super.title,
+      required super.tiles,
+      this.changeDark = false,
+      this.onPressed});
 
   /// Whether or not this section is for changing dark mode settings
   final bool changeDark;
+
+  final Function? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -213,12 +293,21 @@ class _SettingsSectionTheme extends SettingsSection {
       tiles: [
         SettingsTile(
           title: const Text("Appbar"),
+          onPressed: onPressed != null
+              ? (context) => onPressed!(changeDark, appBar: Colors.green)
+              : null,
         ),
         SettingsTile(
           title: const Text("Primary colours"),
+          onPressed: onPressed != null
+              ? (context) => onPressed!(changeDark, primary: Colors.green)
+              : null,
         ),
         SettingsTile(
           title: const Text("Background"),
+          onPressed: onPressed != null
+              ? (context) => onPressed!(changeDark, background: Colors.green)
+              : null,
         ),
         ...tiles
       ],
