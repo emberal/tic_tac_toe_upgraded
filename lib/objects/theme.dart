@@ -16,8 +16,7 @@ abstract class MyTheme {
 
   static Future<void> _saveTheme(ThemeMode mode) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString(
-        "global-theme", mode.toString()); // TODO save as JSON format
+    prefs.setString("global-theme", mode.toString());
   }
 
   static Future<String> getSavedTheme() async {
@@ -40,7 +39,7 @@ abstract class MyTheme {
       player1Color = ColorWrapper(Colors.blue, id: "player1-color"),
       player2Color = ColorWrapper(Colors.red, id: "player2-color");
 
-  /// Returns 'true' if the [globalTheme] is set to [ThemeMode.dark], either forced or with system set to dark
+  /// Returns 'true' if the [globalTheme] is set to [ThemeMode.dark], or [ThemeMode.system] and is dark
   static bool isDark(BuildContext context) =>
       globalTheme == ThemeMode.dark ||
       globalTheme != ThemeMode.light &&
@@ -63,6 +62,7 @@ class ColorWrapper {
   /// A unique [id] that can be used to get this specific object from [SharedPreferences] for example
   String get id => _id;
 
+  /// Converts [id] and [color.value] to a Map, that can be converted to [JSON] format
   Map<String, dynamic> toJSON() => {'id': _id, 'color': color.value};
 
   @override

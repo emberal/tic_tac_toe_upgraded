@@ -95,8 +95,8 @@ class _MyAppState extends State<MyApp> {
     return FutureBuilder(
       future: MyTheme.getSavedTheme(),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        ThemeMode theme = ThemeMode.system;
         if (snapshot.hasData) {
+          late ThemeMode theme = ThemeMode.system;
           if (snapshot.data == ThemeMode.light.toString()) {
             theme = ThemeMode.light;
           } else if (snapshot.data == ThemeMode.dark.toString()) {
@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> {
             return MaterialApp(
               title: 'Tic-Tac-Toe Upgraded',
               debugShowCheckedModeBanner: false,
-              themeMode: theme,
+              themeMode: MyTheme.globalTheme,
               theme: ThemeData(
                 colorScheme: ColorScheme.light(
                   primary: MyTheme.primaryColorsLight.color,

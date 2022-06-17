@@ -12,7 +12,7 @@ import '../widgets/blur.dart';
 import 'game.dart';
 
 class LocalMultiplayerGame extends StatefulWidget {
-  const LocalMultiplayerGame({Key? key}) : super(key: key);
+  const LocalMultiplayerGame({super.key});
 
   @override
   State<LocalMultiplayerGame> createState() => _LocalMultiplayerGameState();

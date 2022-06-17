@@ -32,6 +32,8 @@ class GameUtils {
     return board.every((element) => element.value != 0);
   }
 
+  // TODO create recursive functions instead?
+
   /// Checks if at least one horizontal row is complete
   static bool _isCompleteHorizontal(List<GameButton> board) {
     for (int i = 0; i < board.length; i += 3) {

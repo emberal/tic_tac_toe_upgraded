@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
+import 'package:tic_tac_toe_upgraded/widgets/fullscreen_dialog.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
-import 'package:flex_color_picker/flex_color_picker.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage(
@@ -33,31 +33,41 @@ class _SettingsPageState extends State<SettingsPage> {
   void _setDarkTheme() {
     showDialog(
       context: context,
-      builder: (BuildContext context) => SimpleDialog(
+      builder: (BuildContext context) => AlertDialog(
         title: const Text("Dark theme"),
-        children: [
-          _DialogOption(
-            onPressed: widget.themeModeCallback != null
-                ? () => widget.themeModeCallback!(ThemeMode.system)
-                : null,
-            text: "Follow system",
-            icon: Icons.brightness_4,
-          ),
-          _DialogOption(
-            onPressed: widget.themeModeCallback != null
-                ? () => widget.themeModeCallback!(ThemeMode.light)
-                : null,
-            text: "Light theme",
-            icon: Icons.sunny,
-          ),
-          _DialogOption(
-            onPressed: widget.themeModeCallback != null
-                ? () => widget.themeModeCallback!(ThemeMode.dark)
-                : null,
-            text: "Dark theme",
-            icon: Icons.dark_mode,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Back"),
           ),
         ],
+        content: Container(
+          constraints: const BoxConstraints(),
+          width: 200,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              _DialogOption(
+                onChanged: widget.themeModeCallback,
+                value: ThemeMode.system,
+                text: "Follow system",
+                icon: Icons.brightness_4,
+              ),
+              _DialogOption(
+                onChanged: widget.themeModeCallback,
+                value: ThemeMode.light,
+                text: "Light theme",
+                icon: Icons.sunny,
+              ),
+              _DialogOption(
+                onChanged: widget.themeModeCallback,
+                value: ThemeMode.dark,
+                text: "Dark theme",
+                icon: Icons.dark_mode,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -141,147 +151,32 @@ class _SettingsPageState extends State<SettingsPage> {
 }
 
 class _DialogOption extends StatelessWidget {
-  const _DialogOption({this.onPressed, this.icon, this.text = ""});
+  const _DialogOption(
+      {this.onChanged, this.icon, this.text = "", required this.value});
 
-  final Function? onPressed;
+  final Function(ThemeMode)? onChanged;
   final IconData? icon;
   final String text;
+  final ThemeMode value;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
-      onPressed: onPressed != null ? () => onPressed!() : null,
+      onPressed: onChanged != null ? () => onChanged!(value) : null,
       child: Row(
         children: [
           Icon(icon),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10),
+          Radio(
+            value: value,
+            groupValue: MyTheme.globalTheme,
+            onChanged: (v) => onChanged!(value),
+            activeColor: MyTheme.isDark(context)
+                ? MyTheme.primaryColorsDark.color
+                : MyTheme.primaryColorsLight.color,
           ),
           Text(text),
         ],
       ),
-    );
-  }
-}
-
-class FullScreenDialog extends StatefulWidget {
-  const FullScreenDialog({super.key, this.title = "", this.colorPickerDialog});
-
-  /// The [title] in the [AppBar]
-  final String title;
-
-  /// The [Function] that opens the [colorPickerDialog]
-  final Function? colorPickerDialog;
-
-  @override
-  State<FullScreenDialog> createState() => _FullScreenDialogState();
-}
-
-class _FullScreenDialogState extends State<FullScreenDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return Layout(
-      title: "Change theme",
-      showMenuButton: false,
-      body: SettingsList(
-        sections: [
-          _SettingsSectionTheme(
-            title: const Text("Light theme"),
-            onPressed: widget.colorPickerDialog,
-            tiles: const [],
-          ),
-          _SettingsSectionTheme(
-            title: const Text("Dark theme"),
-            onPressed: widget.colorPickerDialog,
-            changeDark: true,
-            tiles: const [],
-          ),
-          SettingsSection(
-            title: const Text("Players"),
-            tiles: [
-              SettingsTile(
-                title: const Text("Player1 colours"),
-                leading: ColorIndicator(color: MyTheme.player1Color.color),
-                onPressed: widget.colorPickerDialog != null
-                    ? (context) =>
-                        widget.colorPickerDialog!(MyTheme.player1Color, context)
-                    : null,
-              ),
-              SettingsTile(
-                title: const Text("Player2 colours"),
-                leading: ColorIndicator(color: MyTheme.player2Color.color),
-                onPressed: widget.colorPickerDialog != null
-                    ? (context) =>
-                        widget.colorPickerDialog!(MyTheme.player2Color, context)
-                    : null,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingsSectionTheme extends SettingsSection {
-  const _SettingsSectionTheme(
-      {super.title,
-      required super.tiles,
-      this.changeDark = false,
-      this.onPressed});
-
-  /// Whether or not this section is for changing dark mode settings
-  final bool changeDark;
-
-  /// The [Function] that will be called when one either option is pressed
-  final Function? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsSection(
-      title: title,
-      tiles: [
-        // SettingsTile(
-        //   title: const Text("Appbar"),
-        //   leading: ColorIndicator(
-        //     color: changeDark
-        //         ? MyTheme.appBarColorsDark.object
-        //         : MyTheme.appBarColorsLight.object,
-        //   ),
-        //   onPressed: onPressed != null
-        //       ? (context) => onPressed!(changeDark
-        //           ? MyTheme.appBarColorsDark
-        //           : MyTheme.appBarColorsLight, context)
-        //       : null,
-        // ),
-        SettingsTile(
-          title: const Text("Primary colours"),
-          leading: ColorIndicator(
-            color: changeDark
-                ? MyTheme.primaryColorsDark.color
-                : MyTheme.primaryColorsLight.color,
-          ),
-          onPressed: onPressed != null
-              ? (context) => onPressed!(
-                  changeDark
-                      ? MyTheme.primaryColorsDark
-                      : MyTheme.primaryColorsLight,
-                  context)
-              : null,
-        ),
-        // SettingsTile(
-        //   title: const Text("Background"),
-        //   leading: ColorIndicator(
-        //     color:
-        //         changeDark ? MyTheme.backgroundDark.object : MyTheme.backgroundLight.object,
-        //   ),
-        //   onPressed: onPressed != null
-        //       ? (context) => onPressed!(
-        //           changeDark ? MyTheme.backgroundDark : MyTheme.backgroundLight, context)
-        //       : null,
-        // ),
-        ...tiles
-      ],
     );
   }
 }
