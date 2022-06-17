@@ -112,6 +112,18 @@ class GameUtils {
     }
   }
 
+  /// Returns a saved [String] from [SharedPreferences] by using the [key], if the key doesn't exist, returns 'null'
+  static Future<String?> getSavedString(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
+  }
+
+  /// Returns a [List] of [String]'s from the values stored by the keys from [strings]
+  static Future<List<String?>> getSavedStrings(List<String> strings) async {
+    final prefs = await SharedPreferences.getInstance();
+    return strings.map((key) => prefs.getString(key)).toList();
+  }
+
   static void switchTurn(Player one, Player two) {
     one.isTurn = !one.isTurn;
     two.isTurn = !two.isTurn;

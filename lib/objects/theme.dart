@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,20 +25,20 @@ abstract class MyTheme {
     return prefs.getString("global-theme") ?? ThemeMode.system.toString();
   }
 
-  static Future<void> saveMaterial(Wrapper<Color> material) async {
+  static Future<void> saveMaterial(ColorWrapper material) async {
     final prefs = await SharedPreferences.getInstance();
-    //TODO save
+    prefs.setString(material.id, json.encode(material.toJSON()));
   }
 
   // TODO see which ones are usable
-  static Wrapper<Color> appBarColorsLight = Wrapper(Colors.blue),
-      appBarColorsDark = Wrapper(const Color(0xff121212)),
-      primaryColorsLight = Wrapper(Colors.blue, id: "primary-color-dark"),
-      primaryColorsDark = Wrapper(Colors.blue, id: "primary-color-light"),
-      backgroundLight = Wrapper(Colors.white),
-      backgroundDark = Wrapper(const Color(0xff121212)),
-      player1Color = Wrapper(Colors.blue, id: "player1-color"),
-      player2Color = Wrapper(Colors.red, id: "player2-color");
+  static ColorWrapper appBarColorsLight = ColorWrapper(Colors.blue),
+      appBarColorsDark = ColorWrapper(const Color(0xff121212)),
+      primaryColorsLight = ColorWrapper(Colors.blue, id: "primary-color-light"),
+      primaryColorsDark = ColorWrapper(Colors.blue, id: "primary-color-dark"),
+      backgroundLight = ColorWrapper(Colors.white),
+      backgroundDark = ColorWrapper(const Color(0xff121212)),
+      player1Color = ColorWrapper(Colors.blue, id: "player1-color"),
+      player2Color = ColorWrapper(Colors.red, id: "player2-color");
 
   /// Returns 'true' if the [globalTheme] is set to [ThemeMode.dark], either forced or with system set to dark
   static bool isDark(BuildContext context) =>
@@ -45,22 +47,33 @@ abstract class MyTheme {
           MediaQuery.of(context).platformBrightness == Brightness.dark;
 }
 
-/// A helper class used to wrap an object or a primitive type, so 'pass by pointer' can be used
-class Wrapper<T> {
-  Wrapper(this.object, {String id = ""}) : _id = id;
-  T object;
+/// A helper class used to wrap a [Color] object, so 'pass by pointer' can be used
+class ColorWrapper {
+  ColorWrapper(this.color, {String id = ""}) : _id = id;
+
+  ColorWrapper.fromJSON(Map<String, dynamic> json)
+      : color = Color(json["color"] ?? Colors.blue.value),
+        _id = json["id"] ?? "";
+
+  /// The [color] to be wrapped
+  Color color;
 
   final String _id;
 
   /// A unique [id] that can be used to get this specific object from [SharedPreferences] for example
   String get id => _id;
 
+  Map<String, dynamic> toJSON() => {'id': _id, 'color': color.value};
+
+  @override
+  String toString() => "id=$id, object=$color";
+
   @override
   bool operator ==(Object other) {
     if (this == other) {
       return true;
     }
-    if (other is! Wrapper) {
+    if (other is! ColorWrapper) {
       return false;
     }
     return id == other.id;

@@ -30,9 +30,10 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
   final _time = Stopwatch(); // Used to time the matches
 
   _SinglePlayerGamePageState() {
-    _player = Player(name: "Player1", color: MyTheme.player1Color.object, isTurn: true);
-    _playerAI =
-        PlayerAI(handleMove: handlePress, name: "AI", color: MyTheme.player2Color.object);
+    _player = Player(
+        name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
+    _playerAI = PlayerAI(
+        handleMove: handlePress, name: "AI", color: MyTheme.player2Color.color);
     _time.start();
   }
 

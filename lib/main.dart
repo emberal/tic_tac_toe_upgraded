@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
@@ -26,12 +29,16 @@ class _MyAppState extends State<MyApp> {
       setState(() => MyTheme.setGlobalTheme(mode));
 
   /// Creates a [ColorPickerDialog] that can be used to change colours for certain materials
-  Future<bool> colorPickerDialog(Wrapper<Color> material, BuildContext context) async {
+  Future<bool> colorPickerDialog(
+      ColorWrapper material, BuildContext context) async {
     return ColorPicker(
       // Start color.
-      color: material.object,
+      color: material.color,
       // Update the dialogPickerColor using the callback.
-      onColorChanged: (Color color) => setState(() => material.object = color), // TODO save colors after change
+      onColorChanged: (Color color) {
+        setState(() => material.color = color);
+        MyTheme.saveMaterial(material);
+      },
       width: 40,
       height: 40,
       borderRadius: 4,
@@ -68,47 +75,78 @@ class _MyAppState extends State<MyApp> {
     ).showPickerDialog(
       context,
       constraints:
-      const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
+          const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
     );
   }
 
+  /// If [data] exists, override the existing [color] in [material]
+  void _setMaterial(ColorWrapper material, bool hasData, String? data) {
+    if (hasData && data != null) {
+      material.color = ColorWrapper.fromJSON(
+        json.decode(data),
+      ).color;
+      // Should not be necessary to change [id]
+    }
+  }
+
+  // TODO get themes before the app loads
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: MyTheme.getSavedTheme(),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        late ThemeMode theme = ThemeMode.system;
+        ThemeMode theme = ThemeMode.system;
         if (snapshot.hasData) {
-          theme = snapshot.data == ThemeMode.light.toString()
-              ? ThemeMode.light
-              : snapshot.data == ThemeMode.dark.toString()
-                  ? ThemeMode.dark
-                  : ThemeMode.system;
+          if (snapshot.data == ThemeMode.light.toString()) {
+            theme = ThemeMode.light;
+          } else if (snapshot.data == ThemeMode.dark.toString()) {
+            theme = ThemeMode.dark;
+          }
           MyTheme.setGlobalTheme(theme);
         }
-        return MaterialApp(
-          title: 'Tic-Tac-Toe Upgraded',
-          debugShowCheckedModeBanner: false,
-          themeMode: theme,
-          theme: ThemeData(
-            colorScheme: ColorScheme.light(
-                primary: MyTheme.primaryColorsLight.object,
-                background: MyTheme.backgroundLight.object),
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.dark(
-                primary: MyTheme.primaryColorsDark.object,
-                background: MyTheme.backgroundDark.object),
-          ),
-          initialRoute: "/",
-          routes: {
-            "/": (context) => const MyHomePage(),
-            "/sp_game": (context) => const SinglePlayerGamePage(),
-            "/lmp_game": (context) => const LocalMultiplayerGame(),
-            "/mp_game": (context) => const MultiplayerGame(),
-            "/stats": (context) => const StatsPage(),
-            "/settings": (context) =>
-                SettingsPage(themeModeCallback: changeTheme, colorPickerDialog: colorPickerDialog),
+        return FutureBuilder(
+          future: GameUtils.getSavedStrings([
+            "primary-color-light",
+            "primary-color-dark",
+            "player1-color",
+            "player2-color"
+          ]),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<String?>> snapshot) {
+            _setMaterial(MyTheme.primaryColorsLight, snapshot.hasData,
+                snapshot.data?[0]);
+            _setMaterial(
+                MyTheme.primaryColorsDark, snapshot.hasData, snapshot.data?[1]);
+            _setMaterial(
+                MyTheme.player1Color, snapshot.hasData, snapshot.data?[2]);
+            _setMaterial(
+                MyTheme.player2Color, snapshot.hasData, snapshot.data?[3]);
+            return MaterialApp(
+              title: 'Tic-Tac-Toe Upgraded',
+              debugShowCheckedModeBanner: false,
+              themeMode: theme,
+              theme: ThemeData(
+                colorScheme: ColorScheme.light(
+                  primary: MyTheme.primaryColorsLight.color,
+                ),
+              ),
+              darkTheme: ThemeData(
+                colorScheme: ColorScheme.dark(
+                  primary: MyTheme.primaryColorsDark.color,
+                ),
+              ),
+              initialRoute: "/",
+              routes: {
+                "/": (context) => const MyHomePage(),
+                "/sp_game": (context) => const SinglePlayerGamePage(),
+                "/lmp_game": (context) => const LocalMultiplayerGame(),
+                "/mp_game": (context) => const MultiplayerGame(),
+                "/stats": (context) => const StatsPage(),
+                "/settings": (context) => SettingsPage(
+                    themeModeCallback: changeTheme,
+                    colorPickerDialog: colorPickerDialog),
+              },
+            );
           },
         );
       },

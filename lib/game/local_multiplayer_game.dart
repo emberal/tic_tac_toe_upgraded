@@ -29,8 +29,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
   _LocalMultiplayerGameState() {
     _playerOne = Player(
-        name: "Player1", color: MyTheme.player1Color.object, isTurn: true);
-    _playerTwo = Player(name: "Player2", color: MyTheme.player2Color.object);
+        name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
+    _playerTwo = Player(name: "Player2", color: MyTheme.player2Color.color);
     _time.start();
   }
 

@@ -79,6 +79,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /// Deletes all [SharedPreferences] data
   Future<void> _delete() async {
     Navigator.pop(context);
     final prefs = await SharedPreferences.getInstance();
@@ -93,6 +94,10 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.remove("games-won-mp");
     prefs.remove("time-played-mp");
     prefs.remove("global-theme");
+    prefs.remove("primary-color-light");
+    prefs.remove("primary-color-dark");
+    prefs.remove("player1-color");
+    prefs.remove("player2-color");
   }
 
   @override
@@ -196,7 +201,7 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
             tiles: [
               SettingsTile(
                 title: const Text("Player1 colours"),
-                leading: ColorIndicator(color: MyTheme.player1Color.object),
+                leading: ColorIndicator(color: MyTheme.player1Color.color),
                 onPressed: widget.colorPickerDialog != null
                     ? (context) =>
                         widget.colorPickerDialog!(MyTheme.player1Color, context)
@@ -204,7 +209,7 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
               ),
               SettingsTile(
                 title: const Text("Player2 colours"),
-                leading: ColorIndicator(color: MyTheme.player2Color.object),
+                leading: ColorIndicator(color: MyTheme.player2Color.color),
                 onPressed: widget.colorPickerDialog != null
                     ? (context) =>
                         widget.colorPickerDialog!(MyTheme.player2Color, context)
@@ -253,8 +258,8 @@ class _SettingsSectionTheme extends SettingsSection {
           title: const Text("Primary colours"),
           leading: ColorIndicator(
             color: changeDark
-                ? MyTheme.primaryColorsDark.object
-                : MyTheme.primaryColorsLight.object,
+                ? MyTheme.primaryColorsDark.color
+                : MyTheme.primaryColorsLight.color,
           ),
           onPressed: onPressed != null
               ? (context) => onPressed!(
