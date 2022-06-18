@@ -9,7 +9,8 @@ class Board extends StatelessWidget {
       this.board,
       this.width = 3,
       this.pressHandler,
-      this.activePlayer});
+      this.activePlayer,
+      this.rotation = 0});
 
   /// A [List] of objects that will be placed on the [board]
   final List<dynamic>? board;
@@ -22,6 +23,8 @@ class Board extends StatelessWidget {
 
   /// The [Player] currently in control of the [board]
   final Player? activePlayer;
+
+  final double rotation;
 
   @override
   Widget build(BuildContext context) {
@@ -45,28 +48,31 @@ class Board extends StatelessWidget {
                         : BorderSide.none),
               ),
               child: Center(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: element.player?.color,
-                    minimumSize: const Size(50, 50),
-                    maximumSize: const Size(64, 64),
-                  ),
-                  child: Text(
-                    "${element.value}",
-                    style: TextStyle(
-                      // TODO better dynamic background colour
-                      color: _isDark
-                          ? Colors.white
-                          : element.player != null
-                              ? Colors.white
-                              : Colors.black,
+                child: Transform.rotate(
+                  angle: rotation,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: element.player?.color,
+                      minimumSize: const Size(50, 50),
+                      maximumSize: const Size(64, 64),
                     ),
+                    child: Text(
+                      "${element.value}",
+                      style: TextStyle(
+                        // TODO better dynamic background colour
+                        color: _isDark
+                            ? Colors.white
+                            : element.player != null
+                                ? Colors.white
+                                : Colors.black,
+                      ),
+                    ),
+                    onPressed: () =>
+                        activePlayer != null && activePlayer!.activeNumber == -1
+                            ? null
+                            : pressHandler!(element.index,
+                                activePlayer?.activeNumber, activePlayer),
                   ),
-                  onPressed: () =>
-                      activePlayer != null && activePlayer!.activeNumber == -1
-                          ? null
-                          : pressHandler!(element.index,
-                              activePlayer?.activeNumber, activePlayer),
                 ),
               ),
             ),

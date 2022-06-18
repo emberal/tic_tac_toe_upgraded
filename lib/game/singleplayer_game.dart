@@ -104,7 +104,6 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
           Container(
             margin: const EdgeInsets.symmetric(vertical: 50),
             child: SelectButtons(
-              values: _player.usedValues,
               setActiveNumber: setActiveNumber,
               player: _player,
             ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
+import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
+import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/board.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
@@ -26,6 +28,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
   late Player _playerOne, _playerTwo;
   final _time = Stopwatch();
+  final _rotations = [0.0, 3.14];
+  var _rotationIndex = 0;
 
   _LocalMultiplayerGameState() {
     _playerOne = Player(
@@ -70,18 +74,21 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         String winnerString = winner != null ? player.toString() : "No one";
 
         GameUtils.setData(winner == _playerOne, _time,
-            timePlayed: "time-played-lmp",
-            gamesWon: "games-won-lmp",
-            gamesPlayed: "games-played-lmp");
+            timePlayed: StatData.timePlayed.lmp,
+            gamesWon: StatData.gamesWon.lmp,
+            gamesPlayed: StatData.gamesPlayed.lmp);
         showDialog(
             context: context,
             builder: (BuildContext context) => CompleteAlert(
                   title: "$winnerString won the match",
                   text: "Rematch?",
-                  navigator: "/lmp_game",
+                  navigator: Nav.lmp.route,
                 ));
       } else {
         GameUtils.switchTurn(_playerOne, _playerTwo);
+        setState(() {
+          _rotationIndex = (_rotationIndex + 1) % 2;
+        });
       }
     }
   }
@@ -101,6 +108,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               setActiveNumber: setActiveNumber,
               player: _playerTwo,
               offsetUp: false,
+              rotation: _rotations[_rotationIndex],
             ),
           ),
           Expanded(
@@ -111,6 +119,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                 pressHandler: handlePress,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
+                rotation: _rotations[_rotationIndex],
               ),
             ),
           ),
@@ -119,6 +128,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
               player: _playerOne,
+              rotation: _rotations[_rotationIndex],
             ),
           ),
           _playerOne.isTurn ? Blur(color: _playerOne.color) : const Blur(),
