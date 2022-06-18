@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
-import 'package:tic_tac_toe_upgraded/main.dart';
 
 class Player {
-  Player(
-      {this.name,
-      this.color,
-      this.activeNumber = -1,
-      this.isTurn = false});
+  Player({this.name, this.color, this.activeNumber = -1, this.isTurn = false});
 
   /// The [name] of the [Player]
   String? name;
@@ -26,5 +21,4 @@ class Player {
 
   @override
   String toString() => "$name";
-
 }

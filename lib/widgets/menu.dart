@@ -7,21 +7,24 @@ class Menu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 150),
       child: Column(
         children: [
-          ...(menus)!.map((item) => Container(
+          ...menus!.map(
+            (item) => Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, (item["page"] ??= "/")), // If null go to home page
+                // If null go to home page
+                onPressed: () =>
+                    Navigator.pushNamed(context, (item["page"] ??= "/")),
+                // TODO change text colour based on the colour of the button!
                 child: Text(item["text"] as String),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(300, 40)
-                ),
-              )
-          ))
+                style:
+                    ElevatedButton.styleFrom(minimumSize: const Size(300, 40)),
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CompleteAlert extends StatelessWidget {
-  const CompleteAlert({super.key, required this.title, required this.text, this.navigator = "/"});
+  const CompleteAlert(
+      {super.key,
+      required this.title,
+      required this.text,
+      this.navigator = "/"});
 
   final String title, text, navigator;
 
@@ -19,8 +23,8 @@ class CompleteAlert extends StatelessWidget {
         TextButton(
           onPressed: () => {
             // Empties the stack then adds a new game to the stack
-            Navigator.of(context).popUntil((route) => route.isFirst),
-            Navigator.pushNamed(context, navigator),
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(navigator, (route) => route.isFirst),
           },
           child: const Text("New Game"),
         ),

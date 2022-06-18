@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 /// The default [Layout] for this app
 class Layout extends StatelessWidget {
   const Layout(
@@ -27,14 +29,15 @@ class Layout extends StatelessWidget {
                 ? [
                     PopupMenuButton(
                       tooltip: 'Menu',
+                      onSelected: (value) {
+                        Navigator.pushNamed(context, Nav.settings.route);
+                      },
                       icon: const Icon(Icons.menu),
                       itemBuilder: (BuildContext context) {
                         return [
-                          PopupMenuItem(
-                            child: const Text("Settings"),
+                          const PopupMenuItem(
+                            child: Text("Settings"),
                             value: "/settings",
-                            onTap: () => Navigator.pushNamed(
-                                context, "/settings"), // TODO not working!
                           ),
                         ];
                       },

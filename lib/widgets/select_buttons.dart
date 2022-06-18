@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
-import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
-import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 
 import '../objects/player.dart';
 

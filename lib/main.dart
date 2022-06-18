@@ -17,6 +17,19 @@ void main() {
   runApp(const MyApp());
 }
 
+enum Nav {
+  home("/"),
+  sp("/sp_game"),
+  lmp("/lmp_game"),
+  mp("/mp_game"),
+  stats("/stats"),
+  settings("/settings");
+
+  const Nav(this.route);
+
+  final String route;
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -87,9 +100,9 @@ class _MyAppState extends State<MyApp> {
       ).color;
       // Should not be necessary to change [id]
     }
+    // TODO else reset material to original
   }
 
-  // TODO get themes before the app loads
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -135,14 +148,14 @@ class _MyAppState extends State<MyApp> {
                   primary: MyTheme.primaryColorsDark.color,
                 ),
               ),
-              initialRoute: "/",
+              initialRoute: Nav.home.route,
               routes: {
-                "/": (context) => const MyHomePage(),
-                "/sp_game": (context) => const SinglePlayerGamePage(),
-                "/lmp_game": (context) => const LocalMultiplayerGame(),
-                "/mp_game": (context) => const MultiplayerGame(),
-                "/stats": (context) => const StatsPage(),
-                "/settings": (context) => SettingsPage(
+                Nav.home.route: (context) => const MyHomePage(),
+                Nav.sp.route: (context) => const SinglePlayerGamePage(),
+                Nav.lmp.route: (context) => const LocalMultiplayerGame(),
+                Nav.mp.route: (context) => const MultiplayerGame(),
+                Nav.stats.route: (context) => const StatsPage(),
+                Nav.settings.route: (context) => SettingsPage(
                     themeModeCallback: changeTheme,
                     colorPickerDialog: colorPickerDialog),
               },
@@ -172,14 +185,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Layout(
       body: Column(
         children: [
-          const Center(
+          Center(
             child: Menu(
               menus: [
-                {"page": "/sp_game", "text": "New single-player game"},
-                {"page": "/lmp_game", "text": "New local multiplayer game"},
-                {"page": "/mp_game", "text": "New multiplayer game"},
-                {"page": "/stats", "text": "Stats"},
-                {"page": "/settings", "text": "Settings"},
+                {"page": Nav.sp.route, "text": "New single-player game"},
+                {"page": Nav.lmp.route, "text": "New local multiplayer game"},
+                {"page": Nav.mp.route, "text": "New multiplayer game"},
+                {"page": Nav.stats.route, "text": "Stats"},
+                {"page": Nav.settings.route, "text": "Settings"},
               ],
             ),
           ),

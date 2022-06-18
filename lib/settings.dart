@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
+import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/fullscreen_dialog.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 
@@ -76,7 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text("Delete data"),
+        title: const Text("Delete data", style: TextStyle(color: Colors.red)),
         content: const Text("Are you sure you want to delete all data?"),
         actions: [
           TextButton(
@@ -94,26 +95,33 @@ class _SettingsPageState extends State<SettingsPage> {
     Navigator.pop(context);
     final prefs = await SharedPreferences.getInstance();
 
-    prefs.remove("games-played-sp");
-    prefs.remove("games-won-sp");
-    prefs.remove("time-played-sp");
-    prefs.remove("games-played-lmp");
-    prefs.remove("games-won-lmp");
-    prefs.remove("time-played-lmp");
-    prefs.remove("games-played-mp");
-    prefs.remove("games-won-mp");
-    prefs.remove("time-played-mp");
-    prefs.remove("global-theme");
-    prefs.remove("primary-color-light");
-    prefs.remove("primary-color-dark");
-    prefs.remove("player1-color");
-    prefs.remove("player2-color");
+    for (var data in StatData.values) {
+      prefs.remove(data.sp);
+      prefs.remove(data.lmp);
+      prefs.remove(data.mp);
+    }
+    for (var data in ThemeId.values) {
+      if (data.both != null) {
+        prefs.remove(data.both!);
+      }
+      if (data.light != null) {
+        prefs.remove(data.light!);
+      }
+      if (data.dark != null) {
+        prefs.remove(data.dark!);
+      }
+    }
+    if (widget.themeModeCallback != null) {
+      // Immediately resets darkMode to system
+      widget.themeModeCallback!(ThemeMode.system);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Layout(
       title: "Settings",
+      showMenuButton: false,
       body: SettingsList(
         sections: [
           SettingsSection(
@@ -138,8 +146,14 @@ class _SettingsPageState extends State<SettingsPage> {
             title: const Text("Other"),
             tiles: [
               SettingsTile(
-                title: const Text("Delete all data"),
-                leading: const Icon(Icons.delete),
+                title: const Text(
+                  "Delete all data",
+                  style: TextStyle(color: Colors.red),
+                ),
+                leading: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
                 onPressed: (context) => _deleteData(),
               ),
             ],

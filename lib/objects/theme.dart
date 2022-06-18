@@ -3,6 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum ThemeId {
+  global(both: "global-theme"),
+  primaryColor(light: "primary-color-light", dark: "primary-color-dark"),
+  player1(both: "player1-color"),
+  player2(both: "player2-color");
+
+  const ThemeId({this.light, this.dark, this.both});
+
+  final String? light;
+  final String? dark;
+  final String? both;
+}
+
 abstract class MyTheme {
   /// What [ThemeMode] the app is using, initial theme is [ThemeMode.system]
   static ThemeMode _globalTheme = ThemeMode.system;
@@ -16,12 +29,12 @@ abstract class MyTheme {
 
   static Future<void> _saveTheme(ThemeMode mode) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString("global-theme", mode.toString());
+    prefs.setString(ThemeId.global.both!, mode.toString());
   }
 
   static Future<String> getSavedTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString("global-theme") ?? ThemeMode.system.toString();
+    return prefs.getString(ThemeId.global.both!) ?? ThemeMode.system.toString();
   }
 
   static Future<void> saveMaterial(ColorWrapper material) async {
@@ -32,12 +45,14 @@ abstract class MyTheme {
   // TODO see which ones are usable
   static ColorWrapper appBarColorsLight = ColorWrapper(Colors.blue),
       appBarColorsDark = ColorWrapper(const Color(0xff121212)),
-      primaryColorsLight = ColorWrapper(Colors.blue, id: "primary-color-light"),
-      primaryColorsDark = ColorWrapper(Colors.blue, id: "primary-color-dark"),
+      primaryColorsLight =
+          ColorWrapper(Colors.blue, id: ThemeId.primaryColor.light!),
+      primaryColorsDark =
+          ColorWrapper(Colors.blue, id: ThemeId.primaryColor.dark!),
       backgroundLight = ColorWrapper(Colors.white),
       backgroundDark = ColorWrapper(const Color(0xff121212)),
-      player1Color = ColorWrapper(Colors.blue, id: "player1-color"),
-      player2Color = ColorWrapper(Colors.red, id: "player2-color");
+      player1Color = ColorWrapper(Colors.blue, id: ThemeId.player1.both!),
+      player2Color = ColorWrapper(Colors.red, id: ThemeId.player2.both!);
 
   /// Returns 'true' if the [globalTheme] is set to [ThemeMode.dark], or [ThemeMode.system] and is dark
   static bool isDark(BuildContext context) =>

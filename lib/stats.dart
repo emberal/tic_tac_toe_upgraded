@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
+
+enum StatData {
+  gamesPlayed("games-played-sp", "games-played-lmp", "games-played-mp"),
+  gamesWon("games-won-sp", "games-won-lmp", "games-won-mp"),
+  timePlayed("time-played-sp", "time-played-lmp", "time-played-mp");
+
+  const StatData(this.sp, this.lmp, this.mp);
+
+  final String sp;
+  final String lmp;
+  final String mp;
+}
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
@@ -24,23 +35,26 @@ class _StatsPageState extends State<StatsPage> {
 
   @override
   void initState() {
-    super.initState();
     _getData();
+    super.initState();
   }
 
   /// Gets the data from the device's local-storage
   Future<void> _getData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      gamesPlayedSp = prefs.getInt("games-played-sp") ?? 0;
-      gamesWonSp = prefs.getInt("games-won-sp") ?? 0;
-      timePlayedSp = Duration(seconds: prefs.getInt("time-played-sp") ?? 0);
-      gamesPlayedLmp = prefs.getInt("games-played-lmp") ?? 0;
-      gamesWonLmp = prefs.getInt("games-won-lmp") ?? 0;
-      timePlayedLmp = Duration(seconds: prefs.getInt("time-played-lmp") ?? 0);
-      gamesPlayedMp = prefs.getInt("games-played-mp") ?? 0;
-      gamesWonMp = prefs.getInt("games-won-mp") ?? 0;
-      timePlayedMp = Duration(seconds: prefs.getInt("time-played-mp") ?? 0);
+      gamesPlayedSp = prefs.getInt(StatData.gamesPlayed.sp) ?? 0;
+      gamesWonSp = prefs.getInt(StatData.gamesWon.sp) ?? 0;
+      timePlayedSp =
+          Duration(seconds: prefs.getInt(StatData.timePlayed.sp) ?? 0);
+      gamesPlayedLmp = prefs.getInt(StatData.gamesPlayed.lmp) ?? 0;
+      gamesWonLmp = prefs.getInt(StatData.gamesWon.lmp) ?? 0;
+      timePlayedLmp =
+          Duration(seconds: prefs.getInt(StatData.timePlayed.lmp) ?? 0);
+      gamesPlayedMp = prefs.getInt(StatData.gamesPlayed.mp) ?? 0;
+      gamesWonMp = prefs.getInt(StatData.gamesWon.mp) ?? 0;
+      timePlayedMp =
+          Duration(seconds: prefs.getInt(StatData.timePlayed.mp) ?? 0);
     });
   }
 

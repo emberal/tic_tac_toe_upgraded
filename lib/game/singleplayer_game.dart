@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
-import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
