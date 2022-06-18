@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
@@ -11,8 +13,8 @@ class SelectButtons extends StatefulWidget {
       {super.key,
       this.setActiveNumber,
       this.player,
-      this.offsetUp = true,
-      this.rotation = 0});
+      this.offsetOnActivate = const Offset(0, 0),
+      this.rotate = false});
 
   /// A [Function] that's called when one of the buttons are pressed
   final Function? setActiveNumber;
@@ -20,10 +22,9 @@ class SelectButtons extends StatefulWidget {
   /// The [Player] that will use the buttons
   final Player? player;
 
-  /// Whether the selected button will be pushed up or down, if 'true' it will be pushed up, otherwise down
-  final bool offsetUp;
+  final Offset offsetOnActivate;
 
-  final double rotation;
+  final bool rotate;
 
   @override
   State<SelectButtons> createState() => _SelectButtonsState();
@@ -44,8 +45,8 @@ class _SelectButtonsState extends State<SelectButtons> {
                   activated: value,
                   player: widget.player,
                   onPressed: widget.setActiveNumber,
-                  offsetUp: widget.offsetUp,
-                  rotation: widget.rotation,
+                  offset: widget.offsetOnActivate,
+                  rotate: widget.rotate,
                 ),
               ),
             )
@@ -62,8 +63,8 @@ class _Button extends StatefulWidget {
       this.activated = true,
       this.onPressed,
       this.value = 0,
-      this.offsetUp = true,
-      this.rotation = 0});
+      this.offset = const Offset(0, 0),
+      this.rotate = false});
 
   final Player? player;
 
@@ -73,9 +74,9 @@ class _Button extends StatefulWidget {
 
   final Function? onPressed;
 
-  final bool offsetUp;
+  final Offset offset;
 
-  final double rotation;
+  final bool rotate;
 
   @override
   State<_Button> createState() => __ButtonState();
@@ -84,17 +85,25 @@ class _Button extends StatefulWidget {
 class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  var _rotation = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
-    _animation = Tween(begin: 0.0, end: 3.14).animate(_controller)
-      ..addStatusListener((status) {
-        print("$status");
-      });
-    //_controller.forward(); // TODO setup logic to run animation
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+    _animation = Tween(begin: 0.0, end: pi).animate(_controller)
+      ..addListener(() => setState(() => _rotation = _animation.value));
+  }
+
+  @override
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.rotate) {
+      _controller.forward();
+    } else if (_rotation == pi) {
+      _controller.reverse();
+    }
   }
 
   @override
@@ -106,7 +115,7 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: widget.rotation,
+      angle: _rotation,
       child: Transform.translate(
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -123,7 +132,7 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
           child: Text("${widget.value}"),
         ),
         offset: widget.player?.activeNumber == widget.value
-            ? Offset(0, widget.offsetUp ? -20 : 20)
+            ? widget.offset
             : const Offset(0, 0),
       ),
     );

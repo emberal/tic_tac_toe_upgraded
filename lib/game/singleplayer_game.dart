@@ -106,6 +106,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
               player: _player,
+              offsetOnActivate: const Offset(0, -20),
             ),
           ),
         ],

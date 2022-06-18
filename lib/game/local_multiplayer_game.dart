@@ -28,8 +28,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
   late Player _playerOne, _playerTwo;
   final _time = Stopwatch();
-  final _rotations = [0.0, 3.14];
-  var _rotationIndex = 0;
+  bool _rotate = false;
 
   _LocalMultiplayerGameState() {
     _playerOne = Player(
@@ -86,14 +85,13 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                 ));
       } else {
         GameUtils.switchTurn(_playerOne, _playerTwo);
-        setState(() {
-          _rotationIndex = (_rotationIndex + 1) % 2;
-        });
+        setState(() => _rotate = !_rotate);
       }
     }
   }
 
   final marginVertical = 30.0;
+  final _offset = const Offset(0, -20);
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +105,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
               player: _playerTwo,
-              offsetUp: false,
-              rotation: _rotations[_rotationIndex],
+              rotate: _rotate,
+              offsetOnActivate: _offset,
             ),
           ),
           Expanded(
@@ -119,7 +117,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                 pressHandler: handlePress,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
-                rotation: _rotations[_rotationIndex],
+                rotate: _rotate,
               ),
             ),
           ),
@@ -128,7 +126,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             child: SelectButtons(
               setActiveNumber: setActiveNumber,
               player: _playerOne,
-              rotation: _rotations[_rotationIndex],
+              rotate: _rotate,
+              offsetOnActivate: _offset,
             ),
           ),
           _playerOne.isTurn ? Blur(color: _playerOne.color) : const Blur(),
