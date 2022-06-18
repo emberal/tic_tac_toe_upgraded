@@ -91,7 +91,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   }
 
   final marginVertical = 30.0;
-  final _offset = const Offset(0, -20);
+  final _offset = const Offset(0, -20); // TODO animate movement
 
   @override
   Widget build(BuildContext context) {
