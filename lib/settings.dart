@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
+import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/fullscreen_dialog.dart';
@@ -94,46 +93,42 @@ class _SettingsPageState extends State<SettingsPage> {
             onPressed: () => Navigator.pop(context),
             child: const Text("Cancel"),
           ),
-          TextButton(onPressed: () => _delete(), child: const Text("Ok")),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                MyPrefs.remove(
+                    keys: SettingsKey.values.map((e) => e.key).toList());
+                MyPrefs.remove(keys: StatData.values.map((e) => e.sp).toList());
+                MyPrefs.remove(
+                    keys: StatData.values.map((e) => e.lmp).toList());
+                MyPrefs.remove(keys: StatData.values.map((e) => e.mp).toList());
+                MyPrefs.remove(
+                    keys: ThemeId.values
+                        .map((e) => e.both != null ? e.both! : "")
+                        .toList());
+                MyPrefs.remove(
+                    keys: ThemeId.values
+                        .map((e) => e.light != null ? e.light! : "")
+                        .toList());
+                MyPrefs.remove(
+                    keys: ThemeId.values
+                        .map((e) => e.dark != null ? e.dark! : "")
+                        .toList());
+                if (widget.themeModeCallback != null) {
+                  // Immediately resets darkMode to system
+                  widget.themeModeCallback!(ThemeMode.system);
+                }
+              },
+              child: const Text("Ok")),
         ],
       ),
     );
   }
 
-  /// Deletes all [SharedPreferences] data
-  Future<void> _delete() async {
-    Navigator.pop(context);
-    final prefs = await SharedPreferences.getInstance();
-
-    for (var data in StatData.values) {
-      prefs.remove(data.sp);
-      prefs.remove(data.lmp);
-      prefs.remove(data.mp);
-    }
-    for (var data in SettingsKey.values) {
-      prefs.remove(data.key);
-    }
-    for (var data in ThemeId.values) {
-      if (data.both != null) {
-        prefs.remove(data.both!);
-      }
-      if (data.light != null) {
-        prefs.remove(data.light!);
-      }
-      if (data.dark != null) {
-        prefs.remove(data.dark!);
-      }
-    }
-    if (widget.themeModeCallback != null) {
-      // Immediately resets darkMode to system
-      widget.themeModeCallback!(ThemeMode.system);
-    }
-  }
-
   void _toggleRotation() {
     setState(() =>
         LocalMultiplayerGame.rotateGlobal = !LocalMultiplayerGame.rotateGlobal);
-    GameUtils.saveBool(SettingsKey.rotate.key, LocalMultiplayerGame.rotateGlobal);
+    MyPrefs.setBool(SettingsKey.rotate.key, LocalMultiplayerGame.rotateGlobal);
   }
 
   @override

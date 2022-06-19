@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 
 enum ThemeId {
   global(both: "global-theme"),
@@ -16,8 +14,6 @@ enum ThemeId {
   final String? both;
 }
 
-// TODO class wide prefs variable
-
 abstract class MyTheme {
   /// What [ThemeMode] the app is using, initial theme is [ThemeMode.system]
   static ThemeMode _globalTheme = ThemeMode.system;
@@ -26,22 +22,9 @@ abstract class MyTheme {
 
   static void setGlobalTheme(ThemeMode mode) {
     _globalTheme = mode;
-    _saveTheme(mode);
-  }
-
-  static Future<void> _saveTheme(ThemeMode mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(ThemeId.global.both!, mode.toString());
-  }
-
-  static Future<String> getSavedTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(ThemeId.global.both!) ?? ThemeMode.system.toString();
-  }
-
-  static Future<void> saveMaterial(ColorWrapper material) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(material.id, json.encode(material.toJSON()));
+    if (ThemeId.global.both != null) {
+      MyPrefs.setString(ThemeId.global.both!, mode.toString());
+    }
   }
 
   // TODO see which ones are usable

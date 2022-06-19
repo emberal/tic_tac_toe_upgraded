@@ -3,8 +3,6 @@ import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 
 import '../objects/player.dart';
 
-// TODO class wide prefs variable
-
 abstract class GameUtils {
   static const boardLength = 9, numberOfValues = 5;
 
@@ -114,28 +112,6 @@ abstract class GameUtils {
     if (gamesWon != null && won) {
       prefs.setInt(gamesWon, (prefs.getInt(gamesWon) ?? 0) + 1);
     }
-  }
-
-  /// Returns a saved [String] from [SharedPreferences] by using the [key], if the key doesn't exist, returns 'null'
-  static Future<String?> getSavedString(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
-  /// Returns a [List] of [String]'s from the values stored by the keys from [strings]
-  static Future<List<String?>> getSavedStrings(List<String> strings) async {
-    final prefs = await SharedPreferences.getInstance();
-    return strings.map((key) => prefs.getString(key)).toList();
-  }
-
-  static Future<void> saveBool(String key, bool b) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool(key, b);
-  }
-
-  static Future<bool?> getSavedBool(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(key);
   }
 
   static void switchTurn(Player one, Player two) {

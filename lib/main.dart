@@ -1,11 +1,10 @@
-import 'dart:convert';
+import 'dart:convert' show json;
 
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
+import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 import './game/singleplayer_game.dart';
@@ -14,11 +13,9 @@ import './stats.dart';
 import 'game/multiplayer_game.dart';
 import 'widgets/menu.dart';
 
-SharedPreferences? prefs;
-
 void main() async {
   runApp(const MyApp());
-  prefs = await SharedPreferences.getInstance();
+  MyPrefs.init();
 }
 
 enum Nav {
@@ -54,7 +51,7 @@ class _MyAppState extends State<MyApp> {
       // Update the dialogPickerColor using the callback.
       onColorChanged: (Color color) {
         setState(() => material.color = color);
-        MyTheme.saveMaterial(material);
+        MyPrefs.saveMaterial(material);
       },
       width: 40,
       height: 40,
@@ -97,8 +94,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// If [data] exists, override the existing [color] in [material]
-  void _setMaterial(ColorWrapper material, bool hasData, String? data) {
-    if (hasData && data != null) {
+  void _setMaterial(ColorWrapper material, String? data) {
+    if (data != null) {
       material.color = ColorWrapper.fromJSON(
         json.decode(data),
       ).color;
@@ -109,68 +106,51 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (prefs != null) {
-      LocalMultiplayerGame.rotateGlobal =
-          prefs!.getBool(SettingsKey.rotate.key) ?? true;
+    LocalMultiplayerGame.rotateGlobal = MyPrefs.getBool(SettingsKey.rotate.key);
+    _setMaterial(MyTheme.primaryColorsLight,
+        MyPrefs.getString(ThemeId.primaryColor.light ?? ""));
+    _setMaterial(MyTheme.primaryColorsDark,
+        MyPrefs.getString(ThemeId.primaryColor.dark ?? ""));
+    _setMaterial(
+        MyTheme.player1Color, MyPrefs.getString(ThemeId.player1.both ?? ""));
+    _setMaterial(
+        MyTheme.player2Color, MyPrefs.getString(ThemeId.player2.both ?? ""));
+
+    final stringTheme = MyPrefs.getString(ThemeId.global.both ?? "") ?? "";
+    late ThemeMode theme = ThemeMode.system;
+    if (stringTheme == ThemeMode.light.toString()) {
+      theme = ThemeMode.light;
+    } else if (stringTheme == ThemeMode.dark.toString()) {
+      theme = ThemeMode.dark;
     }
-    return FutureBuilder(
-      future: MyTheme.getSavedTheme(), // TODO use [prefs] variable
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.hasData) {
-          late ThemeMode theme = ThemeMode.system;
-          if (snapshot.data == ThemeMode.light.toString()) {
-            theme = ThemeMode.light;
-          } else if (snapshot.data == ThemeMode.dark.toString()) {
-            theme = ThemeMode.dark;
-          }
-          MyTheme.setGlobalTheme(theme);
-        }
-        return FutureBuilder(
-          // TODO use [prefs] variable
-          future: GameUtils.getSavedStrings([
-            "primary-color-light",
-            "primary-color-dark",
-            "player1-color",
-            "player2-color"
-          ]),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<String?>> snapshot) {
-            _setMaterial(MyTheme.primaryColorsLight, snapshot.hasData,
-                snapshot.data?[0]);
-            _setMaterial(
-                MyTheme.primaryColorsDark, snapshot.hasData, snapshot.data?[1]);
-            _setMaterial(
-                MyTheme.player1Color, snapshot.hasData, snapshot.data?[2]);
-            _setMaterial(
-                MyTheme.player2Color, snapshot.hasData, snapshot.data?[3]);
-            return MaterialApp(
-              title: 'Tic-Tac-Toe Upgraded',
-              debugShowCheckedModeBanner: false,
-              themeMode: MyTheme.globalTheme,
-              theme: ThemeData(
-                colorScheme: ColorScheme.light(
-                  primary: MyTheme.primaryColorsLight.color,
-                ),
-              ),
-              darkTheme: ThemeData(
-                colorScheme: ColorScheme.dark(
-                  primary: MyTheme.primaryColorsDark.color,
-                ),
-              ),
-              initialRoute: Nav.home.route,
-              routes: {
-                Nav.home.route: (context) => const MyHomePage(),
-                Nav.sp.route: (context) => const SinglePlayerGamePage(),
-                Nav.lmp.route: (context) => const LocalMultiplayerGame(),
-                Nav.mp.route: (context) => const MultiplayerGame(),
-                Nav.stats.route: (context) => const StatsPage(),
-                Nav.settings.route: (context) => SettingsPage(
-                    themeModeCallback: changeTheme,
-                    colorPickerDialog: colorPickerDialog),
-              },
-            );
-          },
-        );
+    if (MyPrefs.isInitialized()) {
+      MyTheme.setGlobalTheme(theme);
+    }
+
+    return MaterialApp(
+      title: 'Tic-Tac-Toe Upgraded',
+      debugShowCheckedModeBanner: false,
+      themeMode: MyTheme.globalTheme,
+      theme: ThemeData(
+        colorScheme: ColorScheme.light(
+          primary: MyTheme.primaryColorsLight.color,
+        ),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.dark(
+          primary: MyTheme.primaryColorsDark.color,
+        ),
+      ),
+      initialRoute: Nav.home.route,
+      routes: {
+        Nav.home.route: (context) => const MyHomePage(),
+        Nav.sp.route: (context) => const SinglePlayerGamePage(),
+        Nav.lmp.route: (context) => const LocalMultiplayerGame(),
+        Nav.mp.route: (context) => const MultiplayerGame(),
+        Nav.stats.route: (context) => const StatsPage(),
+        Nav.settings.route: (context) => SettingsPage(
+            themeModeCallback: changeTheme,
+            colorPickerDialog: colorPickerDialog),
       },
     );
   }
