@@ -107,23 +107,21 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     LocalMultiplayerGame.rotateGlobal = MyPrefs.getBool(SettingsKey.rotate.key);
-    _setMaterial(MyTheme.primaryColorsLight,
-        MyPrefs.getString(ThemeId.primaryColor.light ?? ""));
-    _setMaterial(MyTheme.primaryColorsDark,
-        MyPrefs.getString(ThemeId.primaryColor.dark ?? ""));
-    _setMaterial(
-        MyTheme.player1Color, MyPrefs.getString(ThemeId.player1.both ?? ""));
-    _setMaterial(
-        MyTheme.player2Color, MyPrefs.getString(ThemeId.player2.both ?? ""));
 
-    final stringTheme = MyPrefs.getString(ThemeId.global.both ?? "") ?? "";
-    late ThemeMode theme = ThemeMode.system;
-    if (stringTheme == ThemeMode.light.toString()) {
-      theme = ThemeMode.light;
-    } else if (stringTheme == ThemeMode.dark.toString()) {
-      theme = ThemeMode.dark;
+    for (var element in MyTheme.colors) {
+      if (element.id != "") {
+        _setMaterial(element, MyPrefs.getString(element.id));
+      }
     }
+
+    late ThemeMode theme = ThemeMode.system;
     if (MyPrefs.isInitialized()) {
+      final stringTheme = MyPrefs.getString(ThemeId.global.both ?? "") ?? "";
+      if (stringTheme == ThemeMode.light.toString()) {
+        theme = ThemeMode.light;
+      } else if (stringTheme == ThemeMode.dark.toString()) {
+        theme = ThemeMode.dark;
+      }
       MyTheme.setGlobalTheme(theme);
     }
 
@@ -134,11 +132,15 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.light(
           primary: MyTheme.primaryColorsLight.color,
+          onPrimary: MyTheme.contrast(MyTheme.primaryColorsLight.color) ??
+              Colors.black,
         ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.dark(
           primary: MyTheme.primaryColorsDark.color,
+          onPrimary:
+              MyTheme.contrast(MyTheme.primaryColorsDark.color) ?? Colors.white,
         ),
       ),
       initialRoute: Nav.home.route,

@@ -124,10 +124,9 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
             child: Text(
               "${widget.object.value}",
               style: TextStyle(
-                // TODO better dynamic background colour
-                color: _isDark
-                    ? Colors.white
-                    : widget.object.player != null
+                color: widget.object.player != null
+                    ? MyTheme.contrast(widget.object.player!.color)
+                    : _isDark
                         ? Colors.white
                         : Colors.black,
               ),

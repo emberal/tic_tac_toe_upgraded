@@ -39,11 +39,29 @@ abstract class MyTheme {
       player1Color = ColorWrapper(Colors.blue, id: ThemeId.player1.both!),
       player2Color = ColorWrapper(Colors.red, id: ThemeId.player2.both!);
 
+  static List<ColorWrapper> colors = [
+    appBarColorsLight,
+    appBarColorsDark,
+    primaryColorsLight,
+    primaryColorsDark,
+    backgroundLight,
+    backgroundDark,
+    player1Color,
+    player2Color
+  ];
+
   /// Returns 'true' if the [globalTheme] is set to [ThemeMode.dark], or [ThemeMode.system] and is dark
   static bool isDark(BuildContext context) =>
       globalTheme == ThemeMode.dark ||
       globalTheme != ThemeMode.light &&
           MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+  static Color? contrast(Color? background) {
+    if (background != null) {
+      return background.computeLuminance() < 0.5 ? Colors.white : Colors.black;
+    }
+    return null;
+  }
 }
 
 /// A helper class used to wrap a [Color] object, so 'pass by pointer' can be used

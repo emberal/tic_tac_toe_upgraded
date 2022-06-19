@@ -3,6 +3,7 @@ import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
+import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 
 import '../objects/player.dart';
 
@@ -121,6 +122,9 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
             minimumSize: const Size(50, 50),
             maximumSize: const Size(64, 64),
             primary: widget.player?.color,
+            onPrimary: widget.player != null
+                ? MyTheme.contrast(widget.player!.color)
+                : null,
           ),
           // If a value has been used already, do nothing
           onPressed: widget.player == null ||
