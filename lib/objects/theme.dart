@@ -16,6 +16,8 @@ enum ThemeId {
   final String? both;
 }
 
+// TODO class wide prefs variable
+
 abstract class MyTheme {
   /// What [ThemeMode] the app is using, initial theme is [ThemeMode.system]
   static ThemeMode _globalTheme = ThemeMode.system;

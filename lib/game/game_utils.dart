@@ -1,13 +1,15 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
+import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 
 import '../objects/player.dart';
 
-class GameUtils {
+// TODO class wide prefs variable
+
+abstract class GameUtils {
   static const boardLength = 9, numberOfValues = 5;
 
   /// Checks if a [Player] has three in a row, or both [Player]'s have used all moves
-  static bool isComplete(List<GameButton> board, List<bool> player1Values,
+  static bool isComplete(List<SquareObject> board, List<bool> player1Values,
       List<bool>? player2Values) {
     return isThreeInARow(board) ||
         (isNoMoreMoves(player1Values) &&
@@ -15,7 +17,7 @@ class GameUtils {
   }
 
   /// Checks if there are three in a row on the [board]
-  static bool isThreeInARow(List<GameButton> board) {
+  static bool isThreeInARow(List<SquareObject> board) {
     return _isCompleteHorizontal(board) ||
         _isCompleteVertical(board) ||
         _isCompleteDiagonal(board);
@@ -28,14 +30,14 @@ class GameUtils {
 
   /// returns 'true' if all the squares on the board are used
   @Deprecated("Game can continue as long as a Player has more moves")
-  static bool fullBoard(List<GameButton> board) {
+  static bool fullBoard(List<SquareObject> board) {
     return board.every((element) => element.value != 0);
   }
 
   // TODO create recursive functions instead?
 
   /// Checks if at least one horizontal row is complete
-  static bool _isCompleteHorizontal(List<GameButton> board) {
+  static bool _isCompleteHorizontal(List<SquareObject> board) {
     for (int i = 0; i < board.length; i += 3) {
       // First column
       bool complete = false;
@@ -56,7 +58,7 @@ class GameUtils {
   }
 
   /// Checks if at least one vertical column is complete
-  static bool _isCompleteVertical(List<GameButton> board) {
+  static bool _isCompleteVertical(List<SquareObject> board) {
     for (int i = 0; i < board.length / 3; i++) {
       // First row
       bool complete = false;
@@ -76,7 +78,7 @@ class GameUtils {
   }
 
   /// Checks if one of the diagonals are complete
-  static bool _isCompleteDiagonal(List<GameButton> board) {
+  static bool _isCompleteDiagonal(List<SquareObject> board) {
     var space = 4; // The space between the squares
     for (int i = 0; i < board.length / 3; i += 2) {
       // Switches between the 2 top corners
@@ -124,6 +126,16 @@ class GameUtils {
   static Future<List<String?>> getSavedStrings(List<String> strings) async {
     final prefs = await SharedPreferences.getInstance();
     return strings.map((key) => prefs.getString(key)).toList();
+  }
+
+  static Future<void> saveBool(String key, bool b) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(key, b);
+  }
+
+  static Future<bool?> getSavedBool(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key);
   }
 
   static void switchTurn(Player one, Player two) {

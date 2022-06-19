@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
+import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/fullscreen_dialog.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
+
+enum SettingsKey {
+  rotate("rotate-lmp");
+
+  const SettingsKey(this.key);
+
+  final String key;
+}
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage(
@@ -100,6 +110,9 @@ class _SettingsPageState extends State<SettingsPage> {
       prefs.remove(data.lmp);
       prefs.remove(data.mp);
     }
+    for (var data in SettingsKey.values) {
+      prefs.remove(data.key);
+    }
     for (var data in ThemeId.values) {
       if (data.both != null) {
         prefs.remove(data.both!);
@@ -115,6 +128,12 @@ class _SettingsPageState extends State<SettingsPage> {
       // Immediately resets darkMode to system
       widget.themeModeCallback!(ThemeMode.system);
     }
+  }
+
+  void _toggleRotation() {
+    setState(() =>
+        LocalMultiplayerGame.rotateGlobal = !LocalMultiplayerGame.rotateGlobal);
+    GameUtils.saveBool(SettingsKey.rotate.key, LocalMultiplayerGame.rotateGlobal);
   }
 
   @override
@@ -141,6 +160,17 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ],
           ),
+          SettingsSection(title: const Text("Local multiplayer"), tiles: [
+            SettingsTile.switchTile(
+              initialValue: LocalMultiplayerGame.rotateGlobal,
+              leading: const Icon(Icons.change_circle),
+              onToggle: (context) => _toggleRotation(),
+              activeSwitchColor: MyTheme.isDark(context)
+                  ? MyTheme.primaryColorsDark.color
+                  : MyTheme.primaryColorsLight.color,
+              title: const Text("Rotate between turns"),
+            ),
+          ]),
           // Delete all data
           SettingsSection(
             title: const Text("Other"),

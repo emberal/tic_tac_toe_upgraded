@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
@@ -13,8 +14,11 @@ import './stats.dart';
 import 'game/multiplayer_game.dart';
 import 'widgets/menu.dart';
 
-void main() {
+SharedPreferences? prefs;
+
+void main() async {
   runApp(const MyApp());
+  prefs = await SharedPreferences.getInstance();
 }
 
 enum Nav {
@@ -105,8 +109,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (prefs != null) {
+      LocalMultiplayerGame.rotateGlobal =
+          prefs!.getBool(SettingsKey.rotate.key) ?? true;
+    }
     return FutureBuilder(
-      future: MyTheme.getSavedTheme(),
+      future: MyTheme.getSavedTheme(), // TODO use [prefs] variable
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData) {
           late ThemeMode theme = ThemeMode.system;
@@ -118,6 +126,7 @@ class _MyAppState extends State<MyApp> {
           MyTheme.setGlobalTheme(theme);
         }
         return FutureBuilder(
+          // TODO use [prefs] variable
           future: GameUtils.getSavedStrings([
             "primary-color-light",
             "primary-color-dark",
@@ -201,8 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
             future: _getPackageInfo(),
             builder:
                 (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-              return Text(
-                  "Version: ${snapshot.hasData ? snapshot.data?.version : "null"}");
+              return Text("Version: ${snapshot.data?.version}");
             },
           ),
         ],

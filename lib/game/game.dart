@@ -1,12 +1,9 @@
 import '../objects/player.dart';
-import '../objects/game_button.dart';
+import '../objects/square_object.dart';
 
 abstract class Game {
   /// The values of the [board] where the game is played
-  late final List<GameButton> board;
-
-  /// Sets a [player]'s chosen value
-  void setActiveNumber(int value, Player? player);
+  late final List<SquareObject> board;
 
   /// Used to set the action after a [player] selects a square on the [board]
   void handlePress(int index, int value, Player player);

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/main.dart';
-import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
+import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
+import 'package:tic_tac_toe_upgraded/settings.dart';
 import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/board.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
@@ -16,6 +17,8 @@ import 'game.dart';
 class LocalMultiplayerGame extends StatefulWidget {
   const LocalMultiplayerGame({super.key});
 
+  static bool rotateGlobal = true;
+
   @override
   State<LocalMultiplayerGame> createState() => _LocalMultiplayerGameState();
 }
@@ -23,25 +26,20 @@ class LocalMultiplayerGame extends StatefulWidget {
 class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
     implements Game {
   @override
-  List<GameButton> board =
-      List.generate(GameUtils.boardLength, (index) => GameButton(index: index));
+  List<SquareObject> board = List.generate(
+      GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _playerOne, _playerTwo;
   final _time = Stopwatch();
   bool _rotate = false;
+
+  // TODO random player starts
 
   _LocalMultiplayerGameState() {
     _playerOne = Player(
         name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
     _playerTwo = Player(name: "Player2", color: MyTheme.player2Color.color);
     _time.start();
-  }
-
-  @override
-  void setActiveNumber(int value, Player? player) {
-    if (player != null && player.isTurn) {
-      setState(() => player.activeNumber = value);
-    }
   }
 
   @override
@@ -103,9 +101,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
           Container(
             margin: EdgeInsets.symmetric(vertical: marginVertical),
             child: SelectButtons(
-              setActiveNumber: setActiveNumber,
               player: _playerTwo,
-              rotate: _rotate,
+              rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
               offsetOnActivate: _offset,
             ),
           ),
@@ -117,16 +114,15 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                 pressHandler: handlePress,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
-                rotate: _rotate,
+                rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
               ),
             ),
           ),
           Container(
             margin: EdgeInsets.symmetric(vertical: marginVertical),
             child: SelectButtons(
-              setActiveNumber: setActiveNumber,
               player: _playerOne,
-              rotate: _rotate,
+              rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
               offsetOnActivate: _offset,
             ),
           ),

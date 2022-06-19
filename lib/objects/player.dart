@@ -7,16 +7,16 @@ class Player {
   /// The [name] of the [Player]
   String? name;
 
-  /// The [Color] of the [Player]
+  /// The [color] of the [Player]
   Color? color;
 
-  /// The current selected number
-  int activeNumber;
+  /// The [Player]'s selected number
+  num activeNumber;
 
   /// If it's the [Player]'s turn
   bool isTurn;
 
-  /// A [List] of [bool] describing which values have been used
+  /// A [List] describing which values have been used, if 'true', the value is already used
   final List<bool> usedValues = List.filled(GameUtils.numberOfValues, false);
 
   @override

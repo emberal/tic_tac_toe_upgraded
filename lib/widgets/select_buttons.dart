@@ -8,45 +8,37 @@ import '../objects/player.dart';
 
 // TODO drag and drop buttons to the correct position
 
-class SelectButtons extends StatefulWidget {
+class SelectButtons extends StatelessWidget {
   const SelectButtons(
       {super.key,
-      this.setActiveNumber,
       this.player,
       this.offsetOnActivate = const Offset(0, 0),
       this.rotate = false});
 
-  /// A [Function] that's called when one of the buttons are pressed
-  final Function? setActiveNumber;
-
   /// The [Player] that will use the buttons
   final Player? player;
 
+  /// [Offset] the activated button when [onPressed] is called
   final Offset offsetOnActivate;
 
+  /// If the buttons should rotate 180 degrees on [build], if false and already rotated, the buttons will reverse
   final bool rotate;
 
-  @override
-  State<SelectButtons> createState() => _SelectButtonsState();
-}
-
-class _SelectButtonsState extends State<SelectButtons> {
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ...?widget.player?.usedValues
+        ...?player?.usedValues
             .mapIndexed(
               (index, value) => Container(
                 margin: const EdgeInsets.all(10),
                 child: _Button(
                   value: index + 1,
                   activated: value,
-                  player: widget.player,
-                  onPressed: widget.setActiveNumber,
-                  offset: widget.offsetOnActivate,
-                  rotate: widget.rotate,
+                  player: player,
+                  offsetOnActivate: offsetOnActivate,
+                  rotate: rotate,
                 ),
               ),
             )
@@ -61,21 +53,23 @@ class _Button extends StatefulWidget {
       {super.key,
       this.player,
       this.activated = true,
-      this.onPressed,
       this.value = 0,
-      this.offset = const Offset(0, 0),
+      this.offsetOnActivate = const Offset(0, 0),
       this.rotate = false});
 
+  /// The [Player] in control of the button
   final Player? player;
 
-  final int value;
+  /// The number value of the button
+  final num value;
 
+  /// Is 'true' if the button has already been used
   final bool activated;
 
-  final Function? onPressed;
+  /// [Offset] the button when [onPressed] is called
+  final Offset offsetOnActivate;
 
-  final Offset offset;
-
+  /// If the button should rotate 180 degrees on [build], if false and already rotated, the button will reverse
   final bool rotate;
 
   @override
@@ -85,15 +79,20 @@ class _Button extends StatefulWidget {
 class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  var _rotation = 0.0;
+
+  void _setActiveNumber() {
+    if (widget.player != null && widget.player!.isTurn) {
+      setState(() => widget.player!.activeNumber = widget.value);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
+        vsync: this, duration: const Duration(milliseconds: 250));
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
-      ..addListener(() => setState(() => _rotation = _animation.value));
+      ..addListener(() => setState(() => _animation.value));
   }
 
   @override
@@ -101,7 +100,7 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     if (widget.rotate) {
       _controller.forward();
-    } else if (_rotation == pi) {
+    } else if (_animation.value == pi) {
       _controller.reverse();
     }
   }
@@ -115,7 +114,7 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: _rotation,
+      angle: _animation.value,
       child: Transform.translate(
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -128,11 +127,11 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
                   widget.player! is PlayerAI ||
                   widget.activated
               ? null
-              : () => widget.onPressed!(widget.value, widget.player),
+              : _setActiveNumber,
           child: Text("${widget.value}"),
         ),
         offset: widget.player?.activeNumber == widget.value
-            ? widget.offset
+            ? widget.offsetOnActivate
             : const Offset(0, 0),
       ),
     );

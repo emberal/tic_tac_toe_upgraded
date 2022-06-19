@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
+import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
+import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
 import 'package:tic_tac_toe_upgraded/widgets/select_buttons.dart';
 
 import '../objects/player.dart';
 import '../widgets/board.dart';
 import '../widgets/layout.dart';
-import '../objects/game_button.dart';
+import '../objects/square_object.dart';
 
 class SinglePlayerGamePage extends StatefulWidget {
   const SinglePlayerGamePage({super.key});
@@ -21,8 +23,8 @@ class SinglePlayerGamePage extends StatefulWidget {
 class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
     implements Game {
   @override
-  List<GameButton> board =
-      List.generate(GameUtils.boardLength, (index) => GameButton(index: index));
+  List<SquareObject> board =
+      List.generate(GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _player;
   late PlayerAI _playerAI;
@@ -56,16 +58,16 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         // TODO mark the winning area
         final winner = player;
         GameUtils.setData(winner == _player, _time,
-            gamesPlayed: "games-played-sp",
-            gamesWon: "games-won-sp",
-            timePlayed: "time-played-sp");
+            gamesPlayed: StatData.gamesPlayed.sp,
+            gamesWon: StatData.gamesWon.sp,
+            timePlayed: StatData.timePlayed.sp);
 
         showDialog(
           context: context,
           builder: (BuildContext context) => CompleteAlert(
             title: winner != _playerAI ? "Congratulations" : "You lost",
             text: winner != _playerAI ? "You win!" : "Better luck next time",
-            navigator: "/sp_game",
+            navigator: Nav.sp.route,
           ),
         );
       } else {
@@ -75,12 +77,6 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         }
       }
     }
-  }
-
-  /// Sets the next number to be used on the board
-  @override
-  void setActiveNumber(int value, Player? player) {
-    setState(() => _player.activeNumber = value);
   }
 
   @override
@@ -104,7 +100,6 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
           Container(
             margin: const EdgeInsets.symmetric(vertical: 50),
             child: SelectButtons(
-              setActiveNumber: setActiveNumber,
               player: _player,
               offsetOnActivate: const Offset(0, -20),
             ),

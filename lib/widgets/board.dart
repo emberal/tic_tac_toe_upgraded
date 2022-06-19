@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../objects/game_button.dart';
+import '../objects/square_object.dart';
 import '../objects/player.dart';
 import '../objects/theme.dart';
 
@@ -56,7 +56,7 @@ class _Square extends StatefulWidget {
       this.onPressed,
       this.rotate = false});
 
-  final GameButton object;
+  final SquareObject object;
 
   final Player? activePlayer;
 
@@ -72,15 +72,14 @@ class _Square extends StatefulWidget {
 class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  var rotation = 0.0;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
+        vsync: this, duration: const Duration(milliseconds: 250));
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
-      ..addListener(() => setState(() => rotation = _animation.value));
+      ..addListener(() => setState(() => _animation.value));
   }
 
   @override
@@ -88,7 +87,7 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
     if (widget.rotate) {
       _controller.forward();
-    } else if (rotation == pi) {
+    } else if (_animation.value == pi) {
       _controller.reverse();
     }
   }
@@ -115,7 +114,7 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
       ),
       child: Center(
         child: Transform.rotate(
-          angle: rotation,
+          angle: _animation.value,
           child: TextButton(
             style: TextButton.styleFrom(
               backgroundColor: widget.object.player?.color,

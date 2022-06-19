@@ -1,4 +1,4 @@
-import 'package:tic_tac_toe_upgraded/objects/game_button.dart';
+import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 import 'package:tic_tac_toe_upgraded/objects/player.dart';
 
 class PlayerAI extends Player {
@@ -13,7 +13,7 @@ class PlayerAI extends Player {
   final Function? handleMove;
 
   /// Finds an unused value and a spot to place it, then calls [handleMove]
-  void nextMove(List<GameButton> board) {
+  void nextMove(List<SquareObject> board) {
     // TODO improve """AI"""
     int useValue = 0, index = -1;
 
