@@ -1,6 +1,7 @@
 import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 
 import '../objects/square_object.dart';
 import '../objects/player.dart';
@@ -77,7 +78,8 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 250));
+        vsync: this,
+        duration: const Duration(milliseconds: GameUtils.ROTATION_ANIMATION));
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
   }

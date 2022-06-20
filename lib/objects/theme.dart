@@ -28,24 +28,16 @@ abstract class MyTheme {
   }
 
   // TODO see which ones are usable
-  static ColorWrapper appBarColorsLight = ColorWrapper(Colors.blue),
-      appBarColorsDark = ColorWrapper(const Color(0xff121212)),
-      primaryColorsLight =
+  static ColorWrapper primaryColorsLight =
           ColorWrapper(Colors.blue, id: ThemeId.primaryColor.light!),
       primaryColorsDark =
           ColorWrapper(Colors.blue, id: ThemeId.primaryColor.dark!),
-      backgroundLight = ColorWrapper(Colors.white),
-      backgroundDark = ColorWrapper(const Color(0xff121212)),
       player1Color = ColorWrapper(Colors.blue, id: ThemeId.player1.both!),
       player2Color = ColorWrapper(Colors.red, id: ThemeId.player2.both!);
 
   static List<ColorWrapper> colors = [
-    appBarColorsLight,
-    appBarColorsDark,
     primaryColorsLight,
     primaryColorsDark,
-    backgroundLight,
-    backgroundDark,
     player1Color,
     player2Color
   ];

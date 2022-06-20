@@ -2,6 +2,7 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 
@@ -91,7 +92,8 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 250));
+        vsync: this,
+        duration: const Duration(milliseconds: GameUtils.ROTATION_ANIMATION));
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
   }
