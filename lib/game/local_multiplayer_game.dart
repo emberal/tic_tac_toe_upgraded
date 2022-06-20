@@ -27,7 +27,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
     implements Game {
   @override
   List<SquareObject> board = List.generate(
-      GameUtils.Board_SIZE, (index) => SquareObject(index: index));
+      GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _playerOne, _playerTwo;
   final _time = Stopwatch();

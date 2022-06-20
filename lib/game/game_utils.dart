@@ -3,8 +3,14 @@ import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 
 import '../objects/player.dart';
 
+enum GameType {
+  singlePlayer,
+  localMultiplayer,
+  multiplayer;
+}
+
 abstract class GameUtils {
-  static const Board_SIZE = 9, NUMBER_OF_VALUES = 5, ROTATION_ANIMATION = 250;
+  static const boardLength = 9, numberOfValues = 5, rotationAnimation = 250;
 
   /// Checks if a [Player] has three in a row, or both [Player]'s have used all moves
   static bool isComplete(List<SquareObject> board, List<bool> player1Values,

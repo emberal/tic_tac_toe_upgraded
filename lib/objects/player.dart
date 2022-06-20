@@ -17,7 +17,7 @@ class Player {
   bool isTurn;
 
   /// A [List] describing which values have been used, if 'true', the value is already used
-  final List<bool> usedValues = List.filled(GameUtils.NUMBER_OF_VALUES, false);
+  final List<bool> usedValues = List.filled(GameUtils.numberOfValues, false);
 
   @override
   String toString() => "$name";

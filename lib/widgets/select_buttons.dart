@@ -93,7 +93,7 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: GameUtils.ROTATION_ANIMATION));
+        duration: const Duration(milliseconds: GameUtils.rotationAnimation));
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
   }
@@ -116,25 +116,32 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final button = ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(50, 50),
+          maximumSize: const Size(64, 64),
+          primary: widget.player?.color,
+          onPrimary: widget.player != null
+              ? MyTheme.contrast(widget.player!.color)
+              : null,
+        ),
+        // If a value has been used already, do nothing
+        onPressed: widget.player == null ||
+                widget.player! is PlayerAI ||
+                widget.activated
+            ? null
+            : _setActiveNumber,
+        child: Text("${widget.value}"));
     return Transform.rotate(
       angle: _animation.value,
       child: Transform.translate(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(50, 50),
-            maximumSize: const Size(64, 64),
-            primary: widget.player?.color,
-            onPrimary: widget.player != null
-                ? MyTheme.contrast(widget.player!.color)
-                : null,
-          ),
-          // If a value has been used already, do nothing
-          onPressed: widget.player == null ||
-                  widget.player! is PlayerAI ||
-                  widget.activated
-              ? null
-              : _setActiveNumber,
-          child: Text("${widget.value}"),
+        child: Draggable(
+          ignoringFeedbackSemantics: false,
+          feedback: button,
+          child: button,
+          childWhenDragging: Container(),
+          data: widget.value,
+          maxSimultaneousDrags: 1,
         ),
         offset: widget.player?.activeNumber == widget.value
             ? widget.offsetOnActivate

@@ -24,7 +24,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
     implements Game {
   @override
   List<SquareObject> board =
-      List.generate(GameUtils.Board_SIZE, (index) => SquareObject(index: index));
+      List.generate(GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _player;
   late PlayerAI _playerAI;

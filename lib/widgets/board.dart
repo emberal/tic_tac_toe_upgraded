@@ -2,22 +2,33 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
+import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 
+import '../main.dart';
 import '../objects/square_object.dart';
 import '../objects/player.dart';
 import '../objects/theme.dart';
+import '../stats.dart';
+import 'complete_alert.dart';
 
 class Board extends StatelessWidget {
   const Board(
       {super.key,
       this.board,
+      this.gameType = GameType.singlePlayer,
       this.width = 3,
       this.pressHandler,
+      this.player1Name = "player1",
       this.activePlayer,
-      this.rotate = false});
+      this.otherPlayer,
+      this.time,
+      this.rotate = false,
+      this.navigator = "/"});
 
   /// A [List] of objects that will be placed on the [board]
-  final List<dynamic>? board;
+  final List<SquareObject>? board;
+
+  final GameType gameType;
 
   /// The [width] of the [board]
   final int width;
@@ -25,10 +36,74 @@ class Board extends StatelessWidget {
   /// The [Function] that will be called upon pressing one of the buttons on the [board]
   final Function? pressHandler;
 
+  final String player1Name;
+
   /// The [Player] currently in control of the [board]
   final Player? activePlayer;
 
+  /// The other [Player] in the game
+  final Player? otherPlayer;
+
+  final Stopwatch? time;
+
+  /// Activate the rotate [Animation]
   final bool rotate;
+
+  final String navigator;
+
+
+  // TODO test
+  void findWinner(BuildContext context) {
+    if (GameUtils.isComplete(
+        board!, activePlayer!.usedValues, otherPlayer?.usedValues)) {
+      if (time != null) {
+        time!.stop();
+      }
+
+      // TODO mark the winning area
+      late final Player? winner;
+      if (GameUtils.isThreeInARow(board!)) {
+        winner = activePlayer;
+      } else {
+        winner = null;
+      }
+
+      String winnerString = winner != null ? activePlayer.toString() : "No one";
+      switch (gameType) {
+        case GameType.singlePlayer:
+          GameUtils.setData(winner?.name == player1Name, time ?? Stopwatch(),
+              gamesPlayed: StatData.gamesPlayed.sp,
+              gamesWon: StatData.gamesWon.sp,
+              timePlayed: StatData.timePlayed.sp);
+          break;
+        case GameType.localMultiplayer:
+          GameUtils.setData(winner?.name == player1Name, time ?? Stopwatch(),
+              gamesPlayed: StatData.gamesPlayed.lmp,
+              gamesWon: StatData.gamesWon.lmp,
+              timePlayed: StatData.timePlayed.lmp);
+          break;
+        default:
+          GameUtils.setData(winner?.name == player1Name, time ?? Stopwatch(),
+              gamesPlayed: StatData.gamesPlayed.mp,
+              gamesWon: StatData.gamesWon.mp,
+              timePlayed: StatData.timePlayed.mp);
+      }
+
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => CompleteAlert(
+                title: "$winnerString won the match",
+                text: "Rematch?",
+                navigator: navigator,
+              ));
+    } else {
+      GameUtils.switchTurn(activePlayer!, otherPlayer!);
+      if (activePlayer is PlayerAI) {
+        (activePlayer as PlayerAI)
+            .nextMove(board!); // Starts the other players move
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +116,7 @@ class Board extends StatelessWidget {
               object: element,
               activePlayer: activePlayer,
               onPressed: pressHandler,
+              complete: findWinner,
               rotate: rotate,
             ),
           )
@@ -54,14 +130,20 @@ class _Square extends StatefulWidget {
       {super.key,
       required this.object,
       this.activePlayer,
+      this.otherPlayer,
       this.onPressed,
+      required this.complete,
       this.rotate = false});
 
   final SquareObject object;
 
   final Player? activePlayer;
 
+  final Player? otherPlayer;
+
   final Function? onPressed;
+
+  final Function complete;
 
   /// Activate the rotate [Animation]
   final bool rotate;
@@ -79,7 +161,7 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(
         vsync: this,
-        duration: const Duration(milliseconds: GameUtils.ROTATION_ANIMATION));
+        duration: const Duration(milliseconds: GameUtils.rotationAnimation));
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
   }
@@ -100,47 +182,75 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
+  void handlePress(int value) {
+    if (widget.activePlayer != widget.object.player &&
+        widget.object.value < value) {
+      setState(() {
+        widget.object.value = value;
+        widget.object.player = widget.activePlayer;
+      });
+
+      widget.activePlayer?.usedValues[value - 1] = true;
+      widget.activePlayer?.activeNumber = -1;
+
+      widget.complete(context);
+    }
+  }
+
+  // TODO
+  void handleDrag() {}
+
   @override
   Widget build(BuildContext context) {
     // Is true if [globalTheme] is [dark] or it's [system] and [system] is dark
     bool _isDark = MyTheme.isDark(context);
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.symmetric(
-            vertical: widget.object.index % 3 == 1
-                ? BorderSide(color: _isDark ? Colors.white : Colors.black)
-                : BorderSide.none,
-            horizontal: widget.object.index >= 3 && widget.object.index <= 5
-                ? BorderSide(color: _isDark ? Colors.white : Colors.black)
-                : BorderSide.none),
-      ),
-      child: Center(
-        child: Transform.rotate(
-          angle: _animation.value,
-          child: TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: widget.object.player?.color,
-              minimumSize: const Size(50, 50),
-              maximumSize: const Size(64, 64),
-            ),
-            child: Text(
-              "${widget.object.value}",
-              style: TextStyle(
-                color: widget.object.player != null
-                    ? MyTheme.contrast(widget.object.player!.color)
-                    : _isDark
-                        ? Colors.white
-                        : Colors.black,
+    return DragTarget(
+      builder: (BuildContext context, List<dynamic> accepted,
+          List<dynamic> rejected) {
+        return Container(
+          decoration: BoxDecoration(
+            border: Border.symmetric(
+                vertical: widget.object.index % 3 == 1
+                    ? BorderSide(color: _isDark ? Colors.white : Colors.black)
+                    : BorderSide.none,
+                horizontal: widget.object.index >= 3 && widget.object.index <= 5
+                    ? BorderSide(color: _isDark ? Colors.white : Colors.black)
+                    : BorderSide.none),
+          ),
+          child: Center(
+            child: Transform.rotate(
+              angle: _animation.value,
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: widget.object.player?.color,
+                  minimumSize: const Size(50, 50),
+                  maximumSize: const Size(64, 64),
+                ),
+                child: Text(
+                  "${widget.object.value}",
+                  style: TextStyle(
+                    color: widget.object.player != null
+                        ? MyTheme.contrast(widget.object.player!.color)
+                        : _isDark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                onPressed: () => widget.activePlayer != null &&
+                        widget.activePlayer!.activeNumber == -1
+                    ? null
+                    : widget.onPressed!(widget.object.index,
+                        widget.activePlayer?.activeNumber, widget.activePlayer),
               ),
             ),
-            onPressed: () => widget.activePlayer != null &&
-                    widget.activePlayer!.activeNumber == -1
-                ? null
-                : widget.onPressed!(widget.object.index,
-                    widget.activePlayer?.activeNumber, widget.activePlayer),
           ),
-        ),
-      ),
+        );
+      },
+      onWillAccept: (data) => [1, 2, 3, 4, 5].any((element) => data == element),
+      onAccept: (data) {
+        widget.onPressed!(widget.object.index,
+            widget.activePlayer?.activeNumber, widget.activePlayer);
+      },
     );
   }
 }
