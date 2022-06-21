@@ -1,7 +1,7 @@
 import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart';
+import 'package:collection/collection.dart' show ListExtensions;
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
@@ -10,7 +10,7 @@ import '../objects/player.dart';
 
 // TODO drag and drop buttons to the correct position
 
-class SelectButtons extends StatelessWidget {
+class SelectButtons extends StatefulWidget {
   const SelectButtons(
       {super.key,
       this.player,
@@ -27,20 +27,32 @@ class SelectButtons extends StatelessWidget {
   final bool rotate;
 
   @override
+  State<SelectButtons> createState() => _SelectButtonsState();
+}
+
+class _SelectButtonsState extends State<SelectButtons> {
+  void _setActiveNumber(num value) {
+    if (widget.player != null && widget.player!.isTurn) {
+      setState(() => widget.player!.activeNumber = value);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ...?player?.usedValues
+        ...?widget.player?.usedValues
             .mapIndexed(
               (index, value) => Container(
                 margin: const EdgeInsets.all(10),
                 child: _Button(
                   value: index + 1,
                   activated: value,
-                  player: player,
-                  offsetOnActivate: offsetOnActivate,
-                  rotate: rotate,
+                  onPressed: _setActiveNumber,
+                  player: widget.player,
+                  offsetOnActivate: widget.offsetOnActivate,
+                  rotate: widget.rotate,
                 ),
               ),
             )
@@ -52,8 +64,8 @@ class SelectButtons extends StatelessWidget {
 
 class _Button extends StatefulWidget {
   const _Button(
-      {super.key,
-      this.player,
+      {this.player,
+      this.onPressed,
       this.activated = true,
       this.value = 0,
       this.offsetOnActivate = const Offset(0, 0),
@@ -64,6 +76,9 @@ class _Button extends StatefulWidget {
 
   /// The number value of the button
   final num value;
+
+  /// The function that's called when the button is called
+  final Function? onPressed;
 
   /// Is 'true' if the button has already been used
   final bool activated;
@@ -81,12 +96,6 @@ class _Button extends StatefulWidget {
 class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-
-  void _setActiveNumber() {
-    if (widget.player != null && widget.player!.isTurn) {
-      setState(() => widget.player!.activeNumber = widget.value);
-    }
-  }
 
   @override
   void initState() {
@@ -128,9 +137,10 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
         // If a value has been used already, do nothing
         onPressed: widget.player == null ||
                 widget.player! is PlayerAI ||
-                widget.activated
+                widget.activated ||
+                widget.onPressed == null
             ? null
-            : _setActiveNumber,
+            : () => widget.onPressed!(widget.value),
         child: Text("${widget.value}"));
     return Transform.rotate(
       angle: _animation.value,

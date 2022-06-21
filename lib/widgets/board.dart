@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 
-import '../main.dart';
 import '../objects/square_object.dart';
 import '../objects/player.dart';
 import '../objects/theme.dart';
@@ -50,7 +49,6 @@ class Board extends StatelessWidget {
   final bool rotate;
 
   final String navigator;
-
 
   // TODO test
   void findWinner(BuildContext context) {
@@ -127,8 +125,7 @@ class Board extends StatelessWidget {
 
 class _Square extends StatefulWidget {
   const _Square(
-      {super.key,
-      required this.object,
+      {required this.object,
       this.activePlayer,
       this.otherPlayer,
       this.onPressed,
