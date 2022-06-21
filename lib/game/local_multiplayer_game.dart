@@ -113,6 +113,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               child: Board(
                 pressHandler: handlePress,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
+                otherPlayer: _playerOne.isTurn ? _playerTwo : _playerOne,
                 board: board,
                 rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
               ),

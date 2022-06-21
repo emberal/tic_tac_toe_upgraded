@@ -93,6 +93,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
                   board: board,
                   pressHandler: handlePress,
                   activePlayer: _player.isTurn ? _player : _playerAI,
+                  otherPlayer: _player.isTurn ? _playerAI : _player,
                 ),
               ),
             ),

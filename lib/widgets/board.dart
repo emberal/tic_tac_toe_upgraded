@@ -10,7 +10,7 @@ import '../objects/theme.dart';
 import '../stats.dart';
 import 'complete_alert.dart';
 
-class Board extends StatelessWidget {
+class Board extends StatefulWidget {
   const Board(
       {super.key,
       this.board,
@@ -50,38 +50,46 @@ class Board extends StatelessWidget {
 
   final String navigator;
 
+  @override
+  State<Board> createState() => _BoardState();
+}
+
+class _BoardState extends State<Board> {
+
+  bool _rotate = false;
+
   // TODO test
   void findWinner(BuildContext context) {
     if (GameUtils.isComplete(
-        board!, activePlayer!.usedValues, otherPlayer?.usedValues)) {
-      if (time != null) {
-        time!.stop();
+        widget.board!, widget.activePlayer!.usedValues, widget.otherPlayer?.usedValues)) {
+      if (widget.time != null) {
+        widget.time!.stop();
       }
 
       // TODO mark the winning area
       late final Player? winner;
-      if (GameUtils.isThreeInARow(board!)) {
-        winner = activePlayer;
+      if (GameUtils.isThreeInARow(widget.board!)) {
+        winner = widget.activePlayer;
       } else {
         winner = null;
       }
 
-      String winnerString = winner != null ? activePlayer.toString() : "No one";
-      switch (gameType) {
+      String winnerString = winner != null ? widget.activePlayer.toString() : "No one";
+      switch (widget.gameType) {
         case GameType.singlePlayer:
-          GameUtils.setData(winner?.name == player1Name, time ?? Stopwatch(),
+          GameUtils.setData(winner?.name == widget.player1Name, widget.time ?? Stopwatch(),
               gamesPlayed: StatData.gamesPlayed.sp,
               gamesWon: StatData.gamesWon.sp,
               timePlayed: StatData.timePlayed.sp);
           break;
         case GameType.localMultiplayer:
-          GameUtils.setData(winner?.name == player1Name, time ?? Stopwatch(),
+          GameUtils.setData(winner?.name == widget.player1Name, widget.time ?? Stopwatch(),
               gamesPlayed: StatData.gamesPlayed.lmp,
               gamesWon: StatData.gamesWon.lmp,
               timePlayed: StatData.timePlayed.lmp);
           break;
         default:
-          GameUtils.setData(winner?.name == player1Name, time ?? Stopwatch(),
+          GameUtils.setData(winner?.name == widget.player1Name, widget.time ?? Stopwatch(),
               gamesPlayed: StatData.gamesPlayed.mp,
               gamesWon: StatData.gamesWon.mp,
               timePlayed: StatData.timePlayed.mp);
@@ -92,13 +100,14 @@ class Board extends StatelessWidget {
           builder: (BuildContext context) => CompleteAlert(
                 title: "$winnerString won the match",
                 text: "Rematch?",
-                navigator: navigator,
+                navigator: widget.navigator,
               ));
     } else {
-      GameUtils.switchTurn(activePlayer!, otherPlayer!);
-      if (activePlayer is PlayerAI) {
-        (activePlayer as PlayerAI)
-            .nextMove(board!); // Starts the other players move
+      GameUtils.switchTurn(widget.activePlayer!, widget.otherPlayer!);
+      setState(() => _rotate = !_rotate); // FIXME state doesn't always update!
+      if (widget.activePlayer is PlayerAI) {
+        (widget.activePlayer as PlayerAI)
+            .nextMove(widget.board!); // Starts the other players move
       }
     }
   }
@@ -106,16 +115,16 @@ class Board extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisCount: width,
+      crossAxisCount: widget.width,
       shrinkWrap: true,
-      children: board!
+      children: widget.board!
           .map(
             (element) => _Square(
               object: element,
-              activePlayer: activePlayer,
-              onPressed: pressHandler,
+              activePlayer: widget.activePlayer,
+              onPressed: widget.pressHandler,
               complete: findWinner,
-              rotate: rotate,
+              rotate: widget.rotate,
             ),
           )
           .toList(),
@@ -179,18 +188,22 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void handlePress(int value) {
-    if (widget.activePlayer != widget.object.player &&
-        widget.object.value < value) {
-      setState(() {
-        widget.object.value = value;
-        widget.object.player = widget.activePlayer;
-      });
+  void _handlePress() {
+    late num value;
+    if (widget.activePlayer != null) {
+      value = widget.activePlayer!.activeNumber;
+      if (widget.activePlayer != widget.object.player &&
+          widget.object.value < value) {
+        setState(() {
+          widget.object.value = value;
+          widget.object.player = widget.activePlayer;
+        });
 
-      widget.activePlayer?.usedValues[value - 1] = true;
-      widget.activePlayer?.activeNumber = -1;
+        widget.activePlayer?.usedValues[(value as int) - 1] = true;
+        widget.activePlayer?.activeNumber = -1;
 
-      widget.complete(context);
+        widget.complete(context);
+      }
     }
   }
 
@@ -236,8 +249,7 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
                 onPressed: () => widget.activePlayer != null &&
                         widget.activePlayer!.activeNumber == -1
                     ? null
-                    : widget.onPressed!(widget.object.index,
-                        widget.activePlayer?.activeNumber, widget.activePlayer),
+                    : _handlePress(),
               ),
             ),
           ),
