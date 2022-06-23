@@ -23,8 +23,8 @@ class SinglePlayerGamePage extends StatefulWidget {
 class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
     implements Game {
   @override
-  List<SquareObject> board =
-      List.generate(GameUtils.boardLength, (index) => SquareObject(index: index));
+  List<SquareObject> board = List.generate(
+      GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _player;
   late PlayerAI _playerAI;
@@ -87,13 +87,12 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         children: [
           Expanded(
             child: Container(
-              margin: const EdgeInsets.all(20),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Center(
                 child: Board(
                   board: board,
-                  pressHandler: handlePress,
+                  onPressed: handlePress,
                   activePlayer: _player.isTurn ? _player : _playerAI,
-                  otherPlayer: _player.isTurn ? _playerAI : _player,
                 ),
               ),
             ),

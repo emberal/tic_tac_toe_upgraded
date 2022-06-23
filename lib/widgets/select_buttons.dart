@@ -126,34 +126,38 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final button = ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size(50, 50),
-          maximumSize: const Size(64, 64),
-          primary: widget.player?.color,
-          onPrimary: widget.player != null
-              ? MyTheme.contrast(widget.player!.color)
-              : null,
-        ),
-        // If a value has been used already, do nothing
-        onPressed: widget.player == null ||
-                widget.player! is PlayerAI ||
-                widget.activated ||
-                widget.onPressed == null
-            ? null
-            : () => widget.onPressed!(widget.value),
-        child: Text("${widget.value}"));
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(50, 50),
+        maximumSize: const Size(64, 64),
+        primary: widget.player?.color,
+        onPrimary: widget.player != null
+            ? MyTheme.contrast(widget.player!.color)
+            : null,
+      ),
+      // If a value has been used already, do nothing
+      onPressed: widget.player == null ||
+              widget.player! is PlayerAI ||
+              widget.activated ||
+              widget.onPressed == null
+          ? null
+          : () => widget.onPressed!(widget.value),
+      child: Text("${widget.value}"),
+    );
     return Transform.rotate(
       angle: _animation.value,
       child: Transform.translate(
-        child: Draggable(
-          ignoringFeedbackSemantics: false,
-          feedback: button,
-          child: button,
-          childWhenDragging: Container(),
-          data: widget.value,
-          maxSimultaneousDrags: 1,
-        ),
-        offset: widget.player?.activeNumber == widget.value
+        child: widget.activated ||
+                (widget.player != null ? !widget.player!.isTurn : true)
+            ? button
+            : Draggable(
+                ignoringFeedbackSemantics: false,
+                feedback: button,
+                child: button,
+                childWhenDragging: Container(),
+                data: widget.value,
+                maxSimultaneousDrags: 1,
+              ),
+        offset: widget.player!.activeNumber == widget.value
             ? widget.offsetOnActivate
             : const Offset(0, 0),
       ),
