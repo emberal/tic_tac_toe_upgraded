@@ -43,7 +43,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   }
 
   @override
-  void handlePress(int index, int newValue, Player player) {
+  void handlePress(int index, num newValue, Player player) {
     if (index != -1 &&
         player != board[index].player &&
         player.isTurn &&
@@ -53,7 +53,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         board[index].player = player;
       });
 
-      player.usedValues[newValue - 1] = true;
+      player.usedValues[(newValue as int) - 1] = true;
       player.activeNumber = -1;
 
       if (GameUtils.isComplete(
@@ -111,9 +111,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               margin: const EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               child: Board(
-                pressHandler: handlePress,
+                onPressed: handlePress,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
-                otherPlayer: _playerOne.isTurn ? _playerTwo : _playerOne,
                 board: board,
                 rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
               ),

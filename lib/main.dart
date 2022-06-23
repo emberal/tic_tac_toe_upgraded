@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
       ).color;
       // Should not be necessary to change [id]
     }
-    // TODO else reset material to original
+    // TODO else reset material to original when deleting data
   }
 
   @override
