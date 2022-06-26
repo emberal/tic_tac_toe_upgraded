@@ -38,8 +38,12 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
     _time.start();
   }
 
+  /// The [Function] is called when a [player] presses a button on the board, or drops a [Draggable]
+  /// The [index] refers to the index position on the [Board], from 0 - 8, if [index] is -1, no square has been selected
+  /// The [value] refers to the given value of the [Button] that will be placed on the [Board]. The value
+  /// is only placed on the board if the existing value is 0 or lower than the new value and placed by a different [player]
   @override
-  void handlePress(int index, int value, Player player) {
+  void handlePress(int index, num value, Player player) {
     if (index != -1 &&
         player != board[index].player &&
         board[index].value < value) {
@@ -48,7 +52,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         board[index].player = player;
       });
 
-      player.usedValues[value - 1] = true;
+      player.usedValues[(value as int) - 1] = true;
       player.activeNumber = -1;
 
       if (GameUtils.isComplete(

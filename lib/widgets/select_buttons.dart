@@ -99,8 +99,9 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: GameUtils.rotationAnimation));
+      vsync: this,
+      duration: const Duration(milliseconds: GameUtils.rotationAnimation),
+    );
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
   }
@@ -133,8 +134,7 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
             : null,
       ),
       // If a value has been used already, do nothing
-      onPressed: widget.player == null ||
-              widget.player! is PlayerAI ||
+      onPressed: widget.player is PlayerAI ||
               widget.activated ||
               widget.onPressed == null
           ? null

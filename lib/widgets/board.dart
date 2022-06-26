@@ -57,7 +57,7 @@ class _Square extends StatefulWidget {
       this.onPressed,
       this.rotate = false});
 
-  /// An [Object] containing data of the square
+  /// An [object] containing data of the square
   final SquareObject object;
 
   /// The currently playing [Player]
@@ -81,8 +81,9 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: GameUtils.rotationAnimation));
+      vsync: this,
+      duration: const Duration(milliseconds: GameUtils.rotationAnimation),
+    );
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
   }
