@@ -176,15 +176,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Layout(
       body: Column(
         children: [
-          Center(
-            child: Menu(
-              menus: [
-                {"page": Nav.sp.route, "text": "New single-player game"},
-                {"page": Nav.lmp.route, "text": "New local multiplayer game"},
-                {"page": Nav.mp.route, "text": "New multiplayer game"},
-                {"page": Nav.stats.route, "text": "Stats"},
-                {"page": Nav.settings.route, "text": "Settings"},
-              ],
+          Container(margin: const EdgeInsets.symmetric(vertical: 50)),
+          Expanded(
+            child: Center(
+              child: Menu(
+                menus: [
+                  {"page": Nav.sp.route, "text": "New single-player game"},
+                  {"page": Nav.lmp.route, "text": "New local multiplayer game"},
+                  {"page": Nav.mp.route, "text": "New multiplayer game"},
+                  {"page": Nav.stats.route, "text": "Stats"},
+                  {"page": Nav.settings.route, "text": "Settings"},
+                ],
+              ),
             ),
           ),
           // Version number
