@@ -33,19 +33,22 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: width,
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: width,
+        childAspectRatio: 1
+      ),
       shrinkWrap: true,
-      children: board!
-          .map(
-            (element) => _Square(
-              object: element,
-              activePlayer: activePlayer,
-              onPressed: onPressed,
-              rotate: rotate,
-            ),
-          )
-          .toList(),
+      itemCount: GameUtils.boardLength,
+      itemBuilder: (BuildContext context, int index) {
+        return _Square(
+          object:
+              board?[index] ?? SquareObject(index: index, player: activePlayer),
+          activePlayer: activePlayer,
+          onPressed: onPressed,
+          rotate: rotate,
+        );
+      },
     );
   }
 }
