@@ -25,6 +25,10 @@ abstract class MyPrefs {
     return _prefs?.getBool(key) ?? defaultValue;
   }
 
+  static int getInt(String key, [int defaultvalue = 0]) {
+    return _prefs?.getInt(key) ?? defaultvalue;
+  }
+
   static Future<void> setString(String key, String value) async {
     final prefs = await _instance;
     prefs.setString(key, value);

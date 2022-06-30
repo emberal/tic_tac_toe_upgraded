@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 
@@ -40,21 +41,18 @@ class _StatsPageState extends State<StatsPage> {
   }
 
   /// Gets the data from the device's local-storage
-  Future<void> _getData() async {
-    final prefs = await SharedPreferences.getInstance();
+  void _getData() {
     setState(() {
-      gamesPlayedSp = prefs.getInt(StatData.gamesPlayed.sp) ?? 0;
-      gamesWonSp = prefs.getInt(StatData.gamesWon.sp) ?? 0;
-      timePlayedSp =
-          Duration(seconds: prefs.getInt(StatData.timePlayed.sp) ?? 0);
-      gamesPlayedLmp = prefs.getInt(StatData.gamesPlayed.lmp) ?? 0;
-      gamesWonLmp = prefs.getInt(StatData.gamesWon.lmp) ?? 0;
+      gamesPlayedSp = MyPrefs.getInt(StatData.gamesPlayed.sp);
+      gamesWonSp = MyPrefs.getInt(StatData.gamesWon.sp);
+      timePlayedSp = Duration(seconds: MyPrefs.getInt(StatData.timePlayed.sp));
+      gamesPlayedLmp = MyPrefs.getInt(StatData.gamesPlayed.lmp);
+      gamesWonLmp = MyPrefs.getInt(StatData.gamesWon.lmp);
       timePlayedLmp =
-          Duration(seconds: prefs.getInt(StatData.timePlayed.lmp) ?? 0);
-      gamesPlayedMp = prefs.getInt(StatData.gamesPlayed.mp) ?? 0;
-      gamesWonMp = prefs.getInt(StatData.gamesWon.mp) ?? 0;
-      timePlayedMp =
-          Duration(seconds: prefs.getInt(StatData.timePlayed.mp) ?? 0);
+          Duration(seconds: MyPrefs.getInt(StatData.timePlayed.lmp));
+      gamesPlayedMp = MyPrefs.getInt(StatData.gamesPlayed.mp);
+      gamesWonMp = MyPrefs.getInt(StatData.gamesWon.mp);
+      timePlayedMp = Duration(seconds: MyPrefs.getInt(StatData.timePlayed.mp));
     });
   }
 
@@ -132,6 +130,7 @@ class _Section extends StatelessWidget {
 class _StatsText extends StatelessWidget {
   const _StatsText(this.data);
 
+  /// The text to be displayed
   final String data;
 
   @override

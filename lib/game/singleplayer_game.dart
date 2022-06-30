@@ -91,13 +91,13 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
         children: [
           Expanded(
             child: Container(
+              alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Board(
-                  board: board,
-                  onPressed: handlePress,
-                  activePlayer: _player.isTurn ? _player : _playerAI,
-                ),
+              child: Board(
+                board: board,
+                onPressed: handlePress,
+                activePlayer: _player.isTurn ? _player : _playerAI,
+                squareSize: 100,
               ),
             ),
           ),

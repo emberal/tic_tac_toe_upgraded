@@ -14,7 +14,8 @@ class Board extends StatelessWidget {
       this.width = 3,
       this.onPressed,
       this.activePlayer,
-      this.rotate = false});
+      this.rotate = false,
+      this.squareSize = 50});
 
   /// A [List] of objects that will be placed on the [board]
   final List<dynamic>? board;
@@ -31,24 +32,52 @@ class Board extends StatelessWidget {
   /// If 'true' all the squares in the board will rotate 180 degrees immediately
   final bool rotate;
 
+  /// The size of a single square in the grid
+  final double squareSize;
+
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: width,
-        childAspectRatio: 1
+    List<List<dynamic>> rows = [];
+    if (board != null) {
+      int i = 0;
+      for (; i < board!.length; i += width) {
+        if (i + width > board!.length) {
+          rows.add(board!.sublist(i, board!.length));
+        }
+        else {
+          rows.add(board!.sublist(i, i + width));
+        }
+      }
+    }
+
+    double _deviceHeight = MediaQuery.of(context).size.height;
+
+    return SizedBox(
+      width: (squareSize + _deviceHeight * 0.015) * 3,
+      height: (squareSize + _deviceHeight * 0.001) * 3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ...rows.map(
+            (list) => Row(
+              children: [
+                ...list.map(
+                  (object) => SizedBox(
+                    width: squareSize + _deviceHeight * 0.015,
+                    height: squareSize + _deviceHeight * 0.001,
+                    child: _Square(
+                      object: object as SquareObject,
+                      onPressed: onPressed,
+                      activePlayer: activePlayer,
+                      rotate: rotate,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      shrinkWrap: true,
-      itemCount: GameUtils.boardLength,
-      itemBuilder: (BuildContext context, int index) {
-        return _Square(
-          object:
-              board?[index] ?? SquareObject(index: index, player: activePlayer),
-          activePlayer: activePlayer,
-          onPressed: onPressed,
-          rotate: rotate,
-        );
-      },
     );
   }
 }

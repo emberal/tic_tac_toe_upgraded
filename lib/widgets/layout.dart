@@ -16,6 +16,7 @@ class Layout extends StatelessWidget {
   /// The [title] of the page, displayed in the [AppBar]
   final String title;
 
+  /// Wheter the menu button in the [AppBar] is shown
   final bool showMenuButton;
 
   @override

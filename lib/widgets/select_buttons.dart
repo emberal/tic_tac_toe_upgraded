@@ -43,7 +43,7 @@ class _SelectButtonsState extends State<SelectButtons> {
         ...?widget.player?.usedValues
             .mapIndexed(
               (index, value) => Container(
-                margin: const EdgeInsets.all(10),
+                margin: const EdgeInsets.symmetric(horizontal: 10),
                 child: _Button(
                   value: index + 1,
                   activated: value,

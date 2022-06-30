@@ -3,7 +3,6 @@ import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/main.dart';
 import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
-import 'package:tic_tac_toe_upgraded/settings.dart';
 import 'package:tic_tac_toe_upgraded/stats.dart';
 import 'package:tic_tac_toe_upgraded/widgets/board.dart';
 import 'package:tic_tac_toe_upgraded/widgets/complete_alert.dart';
@@ -115,6 +114,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
                 rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
+                squareSize: 100,
               ),
             ),
           ),
