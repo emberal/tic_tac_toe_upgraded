@@ -7,7 +7,14 @@ class CompleteAlert extends StatelessWidget {
       required this.text,
       this.navigator = "/"});
 
-  final String title, text, navigator;
+  /// The [title] of the alert
+  final String title;
+
+  /// The [text] inside the alert
+  final String text;
+
+  /// The route to return to once the player chooses 'New game', "/" will return to homepage
+  final String navigator;
 
   @override
   Widget build(BuildContext context) {

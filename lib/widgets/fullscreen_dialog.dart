@@ -97,7 +97,7 @@ class _SettingsSectionTheme extends SettingsSection {
                   context)
               : null,
         ),
-        ...tiles
+        ...tiles,
       ],
     );
   }

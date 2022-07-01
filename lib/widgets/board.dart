@@ -50,7 +50,7 @@ class Board extends StatelessWidget {
       }
     }
 
-    double _deviceHeight = MediaQuery.of(context).size.height;
+    final _deviceHeight = MediaQuery.of(context).size.height;
 
     return SizedBox(
       width: (squareSize + _deviceHeight * 0.015) * 3,
@@ -66,7 +66,7 @@ class Board extends StatelessWidget {
                     width: squareSize + _deviceHeight * 0.015,
                     height: squareSize + _deviceHeight * 0.001,
                     child: _Square(
-                      object: object as SquareObject,
+                      object: object,
                       onPressed: onPressed,
                       activePlayer: activePlayer,
                       rotate: rotate,

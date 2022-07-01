@@ -15,9 +15,9 @@ enum ThemeId {
 }
 
 abstract class MyTheme {
-  /// What [ThemeMode] the app is using, initial theme is [ThemeMode.system]
   static ThemeMode _globalTheme = ThemeMode.system;
 
+  /// What [ThemeMode] the app is using, initial theme is [ThemeMode.system]
   static ThemeMode get globalTheme => _globalTheme;
 
   static void setGlobalTheme(ThemeMode mode) {
@@ -27,7 +27,6 @@ abstract class MyTheme {
     }
   }
 
-  // TODO see which ones are usable
   static ColorWrapper primaryColorsLight =
           ColorWrapper(Colors.blue, id: ThemeId.primaryColor.light!),
       primaryColorsDark =
