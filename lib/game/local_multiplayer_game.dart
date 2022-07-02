@@ -17,6 +17,7 @@ class LocalMultiplayerGame extends StatefulWidget {
   const LocalMultiplayerGame({super.key});
 
   static bool rotateGlobal = true;
+  static bool returnObjectToPlayer = false;
 
   @override
   State<LocalMultiplayerGame> createState() => _LocalMultiplayerGameState();
@@ -29,7 +30,9 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
       GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _playerOne, _playerTwo;
+  /// The timer that counts the time
   final _time = Stopwatch();
+  /// Activates the rotations on the board, [LocalMultiplayerGame.rotateGlobal] also needs to be 'true'
   bool _rotate = false;
 
   // TODO random player starts
@@ -43,11 +46,13 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
   @override
   void handlePress(int index, num newValue, Player player) {
-    if (index != -1 &&
-        player != board[index].player &&
-        player.isTurn &&
+    if (index != -1 && player != board[index].player && player.isTurn &&
         board[index].value < newValue) {
+
       setState(() {
+        if (LocalMultiplayerGame.returnObjectToPlayer && board[index].player != null) {
+          board[index].player!.usedValues[(board[index].value as int) - 1] = false;
+        }
         board[index].value = newValue;
         board[index].player = player;
       });

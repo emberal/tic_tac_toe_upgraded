@@ -8,7 +8,8 @@ import 'package:tic_tac_toe_upgraded/widgets/fullscreen_dialog.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
 
 enum SettingsKey {
-  rotate("rotate-lmp");
+  rotate("rotate-lmp"),
+  returnObject("return-object-lmp");
 
   const SettingsKey(this.key);
 
@@ -126,9 +127,19 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _toggleRotation() {
-    setState(() =>
-        LocalMultiplayerGame.rotateGlobal = !LocalMultiplayerGame.rotateGlobal);
+    setState(() {
+      LocalMultiplayerGame.rotateGlobal = !LocalMultiplayerGame.rotateGlobal;
+    });
     MyPrefs.setBool(SettingsKey.rotate.key, LocalMultiplayerGame.rotateGlobal);
+  }
+
+  void _toggleReturnToPlayer() {
+    setState(() {
+      LocalMultiplayerGame.returnObjectToPlayer =
+          !LocalMultiplayerGame.returnObjectToPlayer;
+    });
+    MyPrefs.setBool(SettingsKey.returnObject.key,
+        LocalMultiplayerGame.returnObjectToPlayer);
   }
 
   @override
@@ -155,17 +166,31 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ],
           ),
-          SettingsSection(title: const Text("Local multiplayer"), tiles: [
-            SettingsTile.switchTile(
-              initialValue: LocalMultiplayerGame.rotateGlobal,
-              leading: const Icon(Icons.change_circle),
-              onToggle: (context) => _toggleRotation(),
-              activeSwitchColor: MyTheme.isDark(context)
-                  ? MyTheme.primaryColorsDark.color
-                  : MyTheme.primaryColorsLight.color,
-              title: const Text("Rotate between turns"),
-            ),
-          ]),
+          SettingsSection(
+            title: const Text("Local multiplayer"),
+            tiles: [
+              SettingsTile.switchTile(
+                title: const Text("Rotate between turns"),
+                leading: const Icon(Icons.change_circle),
+                initialValue: LocalMultiplayerGame.rotateGlobal,
+                onToggle: (context) => _toggleRotation(),
+                activeSwitchColor: MyTheme.isDark(context)
+                    ? MyTheme.primaryColorsDark.color
+                    : MyTheme.primaryColorsLight.color,
+              ),
+              SettingsTile.switchTile(
+                title: const Text(
+                  "Return object to player if opponent takes it",
+                ),
+                leading: const Icon(Icons.lock_reset),
+                initialValue: LocalMultiplayerGame.returnObjectToPlayer,
+                onToggle: (context) => _toggleReturnToPlayer(),
+                activeSwitchColor: MyTheme.isDark(context)
+                    ? MyTheme.primaryColorsDark.color
+                    : MyTheme.primaryColorsLight.color,
+              ),
+            ],
+          ),
           // Delete all data
           SettingsSection(
             title: const Text("Other"),
