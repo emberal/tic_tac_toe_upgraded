@@ -1,3 +1,5 @@
+import 'dart:math' show Random;
+
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/main.dart';
@@ -30,28 +32,33 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
       GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _playerOne, _playerTwo;
+
   /// The timer that counts the time
   final _time = Stopwatch();
+
   /// Activates the rotations on the board, [LocalMultiplayerGame.rotateGlobal] also needs to be 'true'
   bool _rotate = false;
 
-  // TODO random player starts
-
   _LocalMultiplayerGameState() {
+    final starts = Random().nextBool();
     _playerOne = Player(
-        name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
-    _playerTwo = Player(name: "Player2", color: MyTheme.player2Color.color);
+        name: "Player1", color: MyTheme.player1Color.color, isTurn: starts);
+    _playerTwo = Player(
+        name: "Player2", color: MyTheme.player2Color.color, isTurn: !starts);
     _time.start();
   }
 
   @override
   void handlePress(int index, num newValue, Player player) {
-    if (index != -1 && player != board[index].player && player.isTurn &&
+    if (index != -1 &&
+        player != board[index].player &&
+        player.isTurn &&
         board[index].value < newValue) {
-
       setState(() {
-        if (LocalMultiplayerGame.returnObjectToPlayer && board[index].player != null) {
-          board[index].player!.usedValues[(board[index].value as int) - 1] = false;
+        if (LocalMultiplayerGame.returnObjectToPlayer &&
+            board[index].player != null) {
+          board[index].player!.usedValues[(board[index].value as int) - 1] =
+              false;
         }
         board[index].value = newValue;
         board[index].player = player;
