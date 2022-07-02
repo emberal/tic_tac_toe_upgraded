@@ -43,8 +43,7 @@ class Board extends StatelessWidget {
       for (; i < board!.length; i += width) {
         if (i + width > board!.length) {
           rows.add(board!.sublist(i, board!.length));
-        }
-        else {
+        } else {
           rows.add(board!.sublist(i, i + width));
         }
       }
@@ -118,11 +117,16 @@ class __SquareState extends State<_Square> with SingleTickerProviderStateMixin {
     );
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
+    _rotateWidget();
   }
 
   @override
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _rotateWidget();
+  }
+
+  void _rotateWidget() {
     if (widget.rotate) {
       _controller.forward();
     } else if (_animation.value == pi) {

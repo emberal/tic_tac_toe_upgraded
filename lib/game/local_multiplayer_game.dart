@@ -18,7 +18,10 @@ import 'game.dart';
 class LocalMultiplayerGame extends StatefulWidget {
   const LocalMultiplayerGame({super.key});
 
+  /// If 'true' rotation animations will be used when switching [Player]'s. 'true' by default
   static bool rotateGlobal = true;
+
+  /// If 'true' will return an object that has been placed on the board, back to the [Player] if the opponent takes it
   static bool returnObjectToPlayer = false;
 
   @override
@@ -39,8 +42,11 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   /// Activates the rotations on the board, [LocalMultiplayerGame.rotateGlobal] also needs to be 'true'
   bool _rotate = false;
 
-  _LocalMultiplayerGameState() {
+  @override
+  void initState() {
+    super.initState();
     final starts = Random().nextBool();
+    _rotate = !starts;
     _playerOne = Player(
         name: "Player1", color: MyTheme.player1Color.color, isTurn: starts);
     _playerTwo = Player(
@@ -69,6 +75,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
 
       if (GameUtils.isComplete(
           board, _playerOne.usedValues, _playerTwo.usedValues)) {
+        // TODO mark as complete if there are more objects but nowhere to place them, eg a player has only 1 left
         _time.stop();
 
         late final Player? winner;
@@ -99,8 +106,8 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
     }
   }
 
-  final marginVertical = 30.0;
-  final _offset = const Offset(0, -20); // TODO animate movement
+  final _marginVertical = 30.0;
+  final _offset = const Offset(0, -20); // TODO animate movement?
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +117,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         children: [
           _playerTwo.isTurn ? Blur(color: _playerTwo.color) : const Blur(),
           Container(
-            margin: EdgeInsets.symmetric(vertical: marginVertical),
+            margin: EdgeInsets.symmetric(vertical: _marginVertical),
             child: SelectButtons(
               player: _playerTwo,
               rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
@@ -131,7 +138,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(vertical: marginVertical),
+            margin: EdgeInsets.symmetric(vertical: _marginVertical),
             child: SelectButtons(
               player: _playerOne,
               rotate: _rotate && LocalMultiplayerGame.rotateGlobal,

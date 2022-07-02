@@ -104,11 +104,16 @@ class __ButtonState extends State<_Button> with SingleTickerProviderStateMixin {
     );
     _animation = Tween(begin: 0.0, end: pi).animate(_controller)
       ..addListener(() => setState(() => _animation.value));
+    _rotateWidget();
   }
 
   @override
   void didUpdateWidget(oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _rotateWidget();
+  }
+
+  void _rotateWidget() {
     if (widget.rotate) {
       _controller.forward();
     } else if (_animation.value == pi) {
