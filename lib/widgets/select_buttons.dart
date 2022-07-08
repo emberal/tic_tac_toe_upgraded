@@ -18,7 +18,7 @@ class SelectButtons extends StatefulWidget {
   /// The [Player] that will use the buttons
   final Player? player;
 
-  /// [Offset] the activated button when [onPressed] is called
+  /// [Offset] the activated button when [updateState] is called
   final Offset offsetOnActivate;
 
   /// If the buttons should rotate 180 degrees on [build], if false and already rotated, the buttons will reverse

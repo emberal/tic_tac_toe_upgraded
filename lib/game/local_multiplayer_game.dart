@@ -55,56 +55,13 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   }
 
   @override
-  void handlePress(int index, num newValue, Player player) {
-    if (index != -1 &&
-        player != board[index].player &&
-        player.isTurn &&
-        board[index].value < newValue) {
-      setState(() {
-        if (LocalMultiplayerGame.returnObjectToPlayer &&
-            board[index].player != null) {
-          board[index].player!.usedValues[(board[index].value as int) - 1] =
-              false;
-        }
-        board[index].value = newValue;
-        board[index].player = player;
-      });
+  void updateState([VoidCallback? fun]) => setState(() => fun);
 
-      player.usedValues[(newValue as int) - 1] = true;
-      player.activeNumber = -1;
+  /// After the [Function] is called it will change the [bool] _rotate
+  void rotate() => _rotate = !_rotate;
 
-      if (GameUtils.isComplete(
-          board, _playerOne.usedValues, _playerTwo.usedValues)) {
-        // TODO mark as complete if there are more objects but nowhere to place them, eg a player has only 1 left
-        _time.stop();
-
-        late final Player? winner;
-        // TODO Mark the winning area
-        if (GameUtils.isThreeInARow(board)) {
-          winner = player;
-        } else {
-          winner = null;
-        }
-
-        String winnerString = winner != null ? player.toString() : "No one";
-
-        GameUtils.setData(winner == _playerOne, _time,
-            timePlayed: StatData.timePlayed.lmp,
-            gamesWon: StatData.gamesWon.lmp,
-            gamesPlayed: StatData.gamesPlayed.lmp);
-        showDialog(
-            context: context,
-            builder: (BuildContext context) => CompleteAlert(
-                  title: "$winnerString won the match",
-                  text: "Rematch?",
-                  navigator: Nav.lmp.route,
-                ));
-      } else {
-        GameUtils.switchTurn(_playerOne, _playerTwo);
-        setState(() => _rotate = !_rotate);
-      }
-    }
-  }
+  @override
+  void switchTurn() => GameUtils.switchTurn(_playerOne, _playerTwo);
 
   final _marginVertical = 30.0;
   final _offset = const Offset(0, -20); // TODO animate movement?
@@ -129,11 +86,15 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               margin: const EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               child: Board(
-                onPressed: handlePress,
+                updateState: updateState,
+                switchTurn: switchTurn,
+                rotateFun: rotate,
                 activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
                 board: board,
                 rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
+                navigator: Nav.lmp.route,
                 squareSize: 100,
+                time: _time,
               ),
             ),
           ),

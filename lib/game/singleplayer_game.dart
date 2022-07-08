@@ -34,52 +34,19 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
     _player = Player(
         name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
     _playerAI = PlayerAI(
-        handleMove: handlePress, name: "AI", color: MyTheme.player2Color.color);
+        name: "AI",
+        color: MyTheme.player2Color.color); // TODO
     _time.start();
   }
 
-  /// The [Function] is called when a [player] presses a button on the board, or drops a [Draggable]
-  /// The [index] refers to the index position on the [Board], from 0 - 8, if [index] is -1, no square has been selected
-  /// The [value] refers to the given value of the [Button] that will be placed on the [Board]. The value
-  /// is only placed on the board if the existing value is 0 or lower than the new value and placed by a different [player]
   @override
-  void handlePress(int index, num value, Player player) {
-    if (index != -1 &&
-        player != board[index].player &&
-        board[index].value < value) {
-      setState(() {
-        board[index].value = value;
-        board[index].player = player;
-      });
+  void updateState([VoidCallback? fun]) => setState(() => fun);
 
-      player.usedValues[(value as int) - 1] = true;
-      player.activeNumber = -1;
-
-      if (GameUtils.isComplete(
-          board, _player.usedValues, _playerAI.usedValues)) {
-        _time.stop();
-
-        // TODO mark the winning area
-        final winner = player;
-        GameUtils.setData(winner == _player, _time,
-            gamesPlayed: StatData.gamesPlayed.sp,
-            gamesWon: StatData.gamesWon.sp,
-            timePlayed: StatData.timePlayed.sp);
-
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => CompleteAlert(
-            title: winner != _playerAI ? "Congratulations" : "You lost",
-            text: winner != _playerAI ? "You win!" : "Better luck next time",
-            navigator: Nav.sp.route,
-          ),
-        );
-      } else {
-        GameUtils.switchTurn(_player, _playerAI);
-        if (_playerAI.isTurn) {
-          _playerAI.nextMove(board); // Starts the other players move
-        }
-      }
+  @override
+  void switchTurn() {
+    GameUtils.switchTurn(_player, _playerAI);
+    if (_playerAI.isTurn) {
+      _playerAI.nextMove(board); // Starts the other players move
     }
   }
 
@@ -95,9 +62,13 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
               margin: const EdgeInsets.symmetric(horizontal: 20),
               child: Board(
                 board: board,
-                onPressed: handlePress,
+                updateState: updateState,
+                switchTurn: switchTurn,
                 activePlayer: _player.isTurn ? _player : _playerAI,
+                ai: _playerAI,
                 squareSize: 100,
+                navigator: Nav.sp.route,
+                time: _time,
               ),
             ),
           ),
