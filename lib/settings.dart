@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/game/local_multiplayer_game.dart';
 import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
@@ -99,10 +100,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.pop(context);
                 MyPrefs.remove(
                     keys: SettingsKey.values.map((e) => e.key).toList());
-                MyPrefs.remove(keys: StatData.values.map((e) => e.sp).toList());
                 MyPrefs.remove(
-                    keys: StatData.values.map((e) => e.lmp).toList());
-                MyPrefs.remove(keys: StatData.values.map((e) => e.mp).toList());
+                    keys: GameType.values.map((e) => e.gamesWon).toList());
+                MyPrefs.remove(
+                    keys: GameType.values.map((e) => e.gamesPlayed).toList());
+                MyPrefs.remove(
+                    keys: GameType.values.map((e) => e.timePlayed).toList());
                 MyPrefs.remove(
                     keys: ThemeId.values
                         .map((e) => e.both != null ? e.both! : "")

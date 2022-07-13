@@ -24,7 +24,8 @@ class Board extends StatelessWidget {
       this.rotate = false,
       this.squareSize = 50,
       this.time,
-      this.navigator = "/"});
+      this.navigator = "/",
+      this.type = GameType.singlePlayer});
 
   /// A [List] of objects that will be placed on the [board]
   final List<dynamic>? board;
@@ -59,20 +60,26 @@ class Board extends StatelessWidget {
   /// Where to navigate the user to if he / she chooses a new game
   final String navigator;
 
+  /// What [GameType] the current game is. Used to save stats to correct values, and methods for spesific games
+  final GameType type;
+
   /// The [Function] is called when a [player] presses a button on the board, or drops a [Draggable]
   /// The [index] refers to the index position on the [Board], from 0 - 8, if [index] is -1, no square has been selected
   /// The [value] refers to the given value of the [Button] that will be placed on the [Board]. The value
   /// is only placed on the board if the existing value is 0 or lower than the new value and placed by a different [player]
-  void handlePress(int index, num newValue, Player player, BuildContext context) {
+  void handlePress(
+      int index, num newValue, Player player, BuildContext context) {
     assert(board != null);
 
     final square = board![index];
     if (index != -1 && player != square.player && square.value < newValue) {
       if (updateState != null) {
-        updateState!(() {});
+        updateState!();
       }
-      if (LocalMultiplayerGame.returnObjectToPlayer && // TODO only use this condition if it's a lmp game
-          square.player != null) {
+
+      if (square.player != null &&
+          (type != GameType.localMultiplayer ||
+              LocalMultiplayerGame.returnObjectToPlayer)) {
         square.player!.usedValues[(square.value as int) - 1] = false;
       }
       square.value = newValue;
@@ -82,12 +89,12 @@ class Board extends StatelessWidget {
       player.activeNumber = -1;
 
       if (GameUtils.isComplete(
-          board as List<SquareObject>, // TODO
+          board as List<SquareObject>, // FIXME
           activePlayer!.usedValues,
           activePlayer!.usedValues)) {
-        // TODO mark as complete if there are more objects but nowhere to place them, eg a player has only 1 left
+        // FIXME mark as complete if there are more objects but nowhere to place them, eg a player has only 1 left
         if (time != null) {
-          time!.stop(); // TODO check if timer is running!
+          time!.stop();
         }
 
         late final Player? winner;
@@ -100,26 +107,26 @@ class Board extends StatelessWidget {
 
         String winnerString = winner != null ? player.toString() : "No one";
 
-        // TODO update correct data, depending on what game is played!
-        GameUtils.setData(winner!.name == "player1", time ?? Stopwatch(),
-            timePlayed: StatData.timePlayed.lmp,
-            gamesWon: StatData.gamesWon.lmp,
-            gamesPlayed: StatData.gamesPlayed.lmp);
+        GameUtils.setData(winner!.name == "Player1", time ?? Stopwatch(),
+            timePlayed: type.timePlayed,
+            gamesWon: type.gamesWon,
+            gamesPlayed: type.gamesPlayed);
+
         showDialog(
           context: context,
           builder: (BuildContext context) => CompleteAlert(
             title: "$winnerString won the match",
-            text: "Rematch?",
+            text: "Play again?",
             navigator: navigator,
           ),
         );
       } else {
         if (switchTurn != null) {
           switchTurn!();
-        }
-        if (switchTurn != null && rotateFun != null) {
-          rotateFun!();
-          updateState!(() {});
+          if (rotateFun != null) {
+            rotateFun!();
+            updateState!();
+          }
         }
       }
     }
@@ -127,7 +134,6 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     if (ai != null) {
       ai!.handleMove = handlePress;
       ai!.context = context;
@@ -150,14 +156,18 @@ class Board extends StatelessWidget {
     /// The [value] refers to the given value of the [Button] that will be placed on the [Board]. The value
     /// is only placed on the board if the existing value is 0 or lower than the new value and placed by a different [player]
     void _handlePress(int index, num newValue, Player player) {
-      return handlePress(index, newValue, player, context);
+      handlePress(index, newValue, player, context);
     }
 
+    // TODO get device width aswell??
     final _deviceHeight = MediaQuery.of(context).size.height;
 
+    final _width = squareSize + _deviceHeight * 0.015;
+    final _height = squareSize + _deviceHeight * 0.001;
+
     return SizedBox(
-      width: (squareSize + _deviceHeight * 0.015) * 3,
-      height: (squareSize + _deviceHeight * 0.001) * 3,
+      width: _width * 3,
+      height: _height * 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -166,8 +176,8 @@ class Board extends StatelessWidget {
               children: [
                 ...list.map(
                   (object) => SizedBox(
-                    width: squareSize + _deviceHeight * 0.015,
-                    height: squareSize + _deviceHeight * 0.001,
+                    width: _width,
+                    height: _height,
                     child: _Square(
                       object: object,
                       onPressed: _handlePress,

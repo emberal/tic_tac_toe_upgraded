@@ -18,15 +18,15 @@ void main() async {
   MyPrefs.init();
 }
 
-enum Nav {
+enum Navigate {
   home("/"),
-  sp("/sp_game"),
-  lmp("/lmp_game"),
-  mp("/mp_game"),
+  singlePlayer("/sp_game"),
+  localMultiplayer("/lmp_game"),
+  multiPlayer("/mp_game"),
   stats("/stats"),
   settings("/settings");
 
-  const Nav(this.route);
+  const Navigate(this.route);
 
   final String route;
 }
@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
       ).color;
       // Should not be necessary to change [id]
     }
-    // TODO else reset material to original when deleting data
+    // TODO else reset material state to original when deleting data
   }
 
   @override
@@ -145,16 +145,18 @@ class _MyAppState extends State<MyApp> {
               MyTheme.contrast(MyTheme.primaryColorsDark.color) ?? Colors.white,
         ),
       ),
-      initialRoute: Nav.home.route,
+      initialRoute: Navigate.home.route,
       routes: {
-        Nav.home.route: (context) => const MyHomePage(),
-        Nav.sp.route: (context) => const SinglePlayerGamePage(),
-        Nav.lmp.route: (context) => const LocalMultiplayerGame(),
-        Nav.mp.route: (context) => const MultiplayerGame(),
-        Nav.stats.route: (context) => const StatsPage(),
-        Nav.settings.route: (context) => SettingsPage(
-            themeModeCallback: changeTheme,
-            colorPickerDialog: colorPickerDialog),
+        Navigate.home.route: (context) => const MyHomePage(),
+        Navigate.singlePlayer.route: (context) => const SinglePlayerGamePage(),
+        Navigate.localMultiplayer.route: (context) =>
+            const LocalMultiplayerGame(),
+        Navigate.multiPlayer.route: (context) => const MultiplayerGame(),
+        Navigate.stats.route: (context) => const StatsPage(),
+        Navigate.settings.route: (context) => SettingsPage(
+              themeModeCallback: changeTheme,
+              colorPickerDialog: colorPickerDialog,
+            ),
       },
     );
   }
@@ -183,11 +185,20 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Center(
               child: Menu(
                 menus: [
-                  {"page": Nav.sp.route, "text": "New single-player game"},
-                  {"page": Nav.lmp.route, "text": "New local multiplayer game"},
-                  {"page": Nav.mp.route, "text": "New multiplayer game"},
-                  {"page": Nav.stats.route, "text": "Stats"},
-                  {"page": Nav.settings.route, "text": "Settings"},
+                  {
+                    "page": Navigate.singlePlayer.route,
+                    "text": "New single-player game"
+                  },
+                  {
+                    "page": Navigate.localMultiplayer.route,
+                    "text": "New local multiplayer game"
+                  },
+                  {
+                    "page": Navigate.multiPlayer.route,
+                    "text": "New multiplayer game"
+                  },
+                  {"page": Navigate.stats.route, "text": "Stats"},
+                  {"page": Navigate.settings.route, "text": "Settings"},
                 ],
               ),
             ),

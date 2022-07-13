@@ -33,9 +33,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
   _SinglePlayerGamePageState() {
     _player = Player(
         name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
-    _playerAI = PlayerAI(
-        name: "AI",
-        color: MyTheme.player2Color.color); // TODO
+    _playerAI = PlayerAI(name: "AI", color: MyTheme.player2Color.color);
     _time.start();
   }
 
@@ -67,7 +65,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
                 activePlayer: _player.isTurn ? _player : _playerAI,
                 ai: _playerAI,
                 squareSize: 100,
-                navigator: Nav.sp.route,
+                navigator: Navigate.singlePlayer.route,
                 time: _time,
               ),
             ),

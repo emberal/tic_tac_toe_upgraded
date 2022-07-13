@@ -31,7 +31,7 @@ class Layout extends StatelessWidget {
                     PopupMenuButton(
                       tooltip: 'Menu',
                       onSelected: (value) {
-                        Navigator.pushNamed(context, Nav.settings.route);
+                        Navigator.pushNamed(context, Navigate.settings.route);
                       },
                       icon: const Icon(Icons.menu),
                       itemBuilder: (BuildContext context) {
