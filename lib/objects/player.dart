@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Color;
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 
 class Player {

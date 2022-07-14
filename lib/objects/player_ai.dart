@@ -1,16 +1,21 @@
+import 'package:flutter/material.dart' show BuildContext;
 import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 import 'package:tic_tac_toe_upgraded/objects/player.dart';
 
 class PlayerAI extends Player {
-  PlayerAI(
-      {this.handleMove,
-      super.name,
-      super.color,
-      super.activeNumber,
-      super.isTurn,});
+  PlayerAI({
+    this.handleMove,
+    this.context,
+    super.name,
+    super.color,
+    super.activeNumber,
+    super.isTurn,
+  });
 
   /// The [Function] that will be called from the [PlayerAI]
-  final Function? handleMove;
+  Function? handleMove;
+
+  BuildContext? context;
 
   /// Finds an unused value and a spot to place it, then calls [handleMove]
   void nextMove(List<SquareObject> board) {
@@ -31,6 +36,8 @@ class PlayerAI extends Player {
         break;
       }
     }
-    handleMove!(index, useValue, this);
+    if (handleMove != null && context != null) {
+      handleMove!(index, useValue, this, context!);
+    }
   }
 }

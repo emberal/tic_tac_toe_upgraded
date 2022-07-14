@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/game/game_utils.dart' show GameType;
 import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 import 'package:tic_tac_toe_upgraded/objects/theme.dart';
 import 'package:tic_tac_toe_upgraded/widgets/layout.dart';
-
-enum StatData {
-  gamesPlayed("games-played-sp", "games-played-lmp", "games-played-mp"),
-  gamesWon("games-won-sp", "games-won-lmp", "games-won-mp"),
-  timePlayed("time-played-sp", "time-played-lmp", "time-played-mp");
-
-  const StatData(this.sp, this.lmp, this.mp);
-
-  final String sp;
-  final String lmp;
-  final String mp;
-}
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
@@ -34,25 +22,39 @@ class _StatsPageState extends State<StatsPage> {
       timePlayedLmp = const Duration(),
       timePlayedMp = const Duration();
 
+  List<dynamic> _stats = [];
+
   @override
   void initState() {
     _getData();
+    _stats = [
+      [GameType.singlePlayer.name, gamesPlayedSp, gamesWonSp, timePlayedSp],
+      [
+        GameType.localMultiplayer.name,
+        gamesPlayedLmp,
+        gamesWonLmp,
+        timePlayedLmp
+      ],
+      [GameType.multiplayer.name, gamesPlayedMp, gamesWonMp, timePlayedMp]
+    ];
     super.initState();
   }
 
   /// Gets the data from the device's local-storage
   void _getData() {
     setState(() {
-      gamesPlayedSp = MyPrefs.getInt(StatData.gamesPlayed.sp);
-      gamesWonSp = MyPrefs.getInt(StatData.gamesWon.sp);
-      timePlayedSp = Duration(seconds: MyPrefs.getInt(StatData.timePlayed.sp));
-      gamesPlayedLmp = MyPrefs.getInt(StatData.gamesPlayed.lmp);
-      gamesWonLmp = MyPrefs.getInt(StatData.gamesWon.lmp);
-      timePlayedLmp =
-          Duration(seconds: MyPrefs.getInt(StatData.timePlayed.lmp));
-      gamesPlayedMp = MyPrefs.getInt(StatData.gamesPlayed.mp);
-      gamesWonMp = MyPrefs.getInt(StatData.gamesWon.mp);
-      timePlayedMp = Duration(seconds: MyPrefs.getInt(StatData.timePlayed.mp));
+      gamesPlayedSp = MyPrefs.getInt(GameType.singlePlayer.gamesPlayed);
+      gamesWonSp = MyPrefs.getInt(GameType.singlePlayer.gamesWon);
+      timePlayedSp =
+          Duration(seconds: MyPrefs.getInt(GameType.singlePlayer.timePlayed));
+      gamesPlayedLmp = MyPrefs.getInt(GameType.localMultiplayer.gamesPlayed);
+      gamesWonLmp = MyPrefs.getInt(GameType.localMultiplayer.gamesWon);
+      timePlayedLmp = Duration(
+          seconds: MyPrefs.getInt(GameType.localMultiplayer.timePlayed));
+      gamesPlayedMp = MyPrefs.getInt(GameType.multiplayer.gamesPlayed);
+      gamesWonMp = MyPrefs.getInt(GameType.multiplayer.gamesWon);
+      timePlayedMp =
+          Duration(seconds: MyPrefs.getInt(GameType.multiplayer.timePlayed));
     });
   }
 
@@ -66,30 +68,19 @@ class _StatsPageState extends State<StatsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Section(
-              title: "Singleplayer",
-              children: [
-                _StatsText("Games played: $gamesPlayedSp"),
-                _StatsText("Games won: $gamesWonSp"),
-                _StatsText("Time played: ${timePlayedSp.inMinutes} minutes"),
-              ],
-            ),
-            _Section(
-              title: "Local multiplayer",
-              children: [
-                _StatsText("Games played: $gamesPlayedLmp"),
-                _StatsText("Games won: $gamesWonLmp"),
-                _StatsText("Time played: ${timePlayedLmp.inMinutes} minutes"),
-              ],
-            ),
-            _Section(
-              title: "Multiplayer",
-              children: [
-                _StatsText("Games played: $gamesPlayedMp"),
-                _StatsText("Games won: $gamesWonMp"),
-                _StatsText("Time played: ${timePlayedMp.inMinutes} minutes"),
-              ],
-            ),
+            ..._stats
+                .map(
+                  (e) => _Section(
+                    title: e[0],
+                    children: [
+                      _StatsText("Games played: ${e[1]}"),
+                      _StatsText("Games won: ${e[2]}"),
+                      _StatsText(
+                          "Time played: ${e[3].inMinutes} minute${e[3].inMinutes != 1 ? "s" : ""}"),
+                    ],
+                  ),
+                )
+                .toList(),
           ],
         ),
       ),

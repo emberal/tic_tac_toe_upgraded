@@ -4,9 +4,19 @@ import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 import '../objects/player.dart';
 
 enum GameType {
-  singlePlayer,
-  localMultiplayer,
-  multiplayer;
+  singlePlayer(
+      "Single player", "games-played-sp", "games-won-sp", "time-played-sp"),
+  localMultiplayer("Local multiplayer", "games-played-lmp", "games-won-lmp",
+      "time-played-lmp"),
+  multiplayer(
+      "Multiplayer", "games-played-mp", "games-won-mp", "time-played-mp");
+
+  const GameType(this.name, this.gamesPlayed, this.gamesWon, this.timePlayed);
+
+  final String name;
+  final String gamesPlayed;
+  final String gamesWon;
+  final String timePlayed;
 }
 
 abstract class GameUtils {

@@ -2,20 +2,30 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
+import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 
+import '../game/local_multiplayer_game.dart';
 import '../objects/square_object.dart';
 import '../objects/player.dart';
 import '../objects/theme.dart';
+import '../stats.dart';
+import 'complete_alert.dart';
 
 class Board extends StatelessWidget {
   const Board(
       {super.key,
       this.board,
       this.width = 3,
-      this.onPressed,
+      this.updateState,
+      this.switchTurn,
+      this.rotateFun,
       this.activePlayer,
+      this.ai,
       this.rotate = false,
-      this.squareSize = 50});
+      this.squareSize = 50,
+      this.time,
+      this.navigator = "/",
+      this.type = GameType.singlePlayer});
 
   /// A [List] of objects that will be placed on the [board]
   final List<dynamic>? board;
@@ -23,11 +33,20 @@ class Board extends StatelessWidget {
   /// The [width] of the [board]
   final int width;
 
-  /// The [Function] that will be called upon pressing one of the buttons on the [board]
-  final Function? onPressed;
+  /// A [Function] that when called, will update the state of the widget it's in, and it's children
+  final Function? updateState;
+
+  /// A [Function] that's called at the end of the round, must be used to change whoose [Player]'s turn it is
+  final VoidCallback? switchTurn;
+
+  /// A [Function] used to change the [rotate] variable
+  final VoidCallback? rotateFun;
 
   /// The [Player] currently in control of the [board]
   final Player? activePlayer;
+
+  /// If one of the [Player]'s is an AI, this must be set, so that the AI may call the handlePress [Function] and get's the correct [context]
+  final PlayerAI? ai;
 
   /// If 'true' all the squares in the board will rotate 180 degrees immediately
   final bool rotate;
@@ -35,38 +54,133 @@ class Board extends StatelessWidget {
   /// The size of a single square in the grid
   final double squareSize;
 
+  /// The timer used for the game
+  final Stopwatch? time;
+
+  /// Where to navigate the user to if he / she chooses a new game
+  final String navigator;
+
+  /// What [GameType] the current game is. Used to save stats to correct values, and methods for spesific games
+  final GameType type;
+
+  /// The [Function] is called when a [player] presses a button on the board, or drops a [Draggable]
+  /// The [index] refers to the index position on the [Board], from 0 - 8, if [index] is -1, no square has been selected
+  /// The [value] refers to the given value of the [Button] that will be placed on the [Board]. The value
+  /// is only placed on the board if the existing value is 0 or lower than the new value and placed by a different [player]
+  void handlePress(
+      int index, num newValue, Player player, BuildContext context) {
+    assert(board != null);
+
+    final square = board![index];
+    if (index != -1 && player != square.player && square.value < newValue) {
+      if (updateState != null) {
+        updateState!();
+      }
+
+      if (square.player != null &&
+          (type != GameType.localMultiplayer ||
+              LocalMultiplayerGame.returnObjectToPlayer)) {
+        square.player!.usedValues[(square.value as int) - 1] = false;
+      }
+      square.value = newValue;
+      square.player = player;
+
+      player.usedValues[(newValue as int) - 1] = true;
+      player.activeNumber = -1;
+
+      if (GameUtils.isComplete(
+          board as List<SquareObject>, // FIXME
+          activePlayer!.usedValues,
+          activePlayer!.usedValues)) {
+        // FIXME mark as complete if there are more objects but nowhere to place them, eg a player has only 1 left
+        if (time != null) {
+          time!.stop();
+        }
+
+        late final Player? winner;
+        // TODO Mark the winning area
+        if (GameUtils.isThreeInARow(board as List<SquareObject>)) {
+          winner = player;
+        } else {
+          winner = null;
+        }
+
+        String winnerString = winner != null ? player.toString() : "No one";
+
+        GameUtils.setData(winner!.name == "Player1", time ?? Stopwatch(),
+            timePlayed: type.timePlayed,
+            gamesWon: type.gamesWon,
+            gamesPlayed: type.gamesPlayed);
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => CompleteAlert(
+            title: "$winnerString won the match",
+            text: "Play again?",
+            navigator: navigator,
+          ),
+        );
+      } else {
+        if (switchTurn != null) {
+          switchTurn!();
+          if (rotateFun != null) {
+            rotateFun!();
+            updateState!();
+          }
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<List<dynamic>> rows = [];
+    if (ai != null) {
+      ai!.handleMove = handlePress;
+      ai!.context = context;
+    }
+
+    List<List<dynamic>> _rows = [];
     if (board != null) {
       int i = 0;
       for (; i < board!.length; i += width) {
         if (i + width > board!.length) {
-          rows.add(board!.sublist(i, board!.length));
+          _rows.add(board!.sublist(i, board!.length));
         } else {
-          rows.add(board!.sublist(i, i + width));
+          _rows.add(board!.sublist(i, i + width));
         }
       }
     }
 
+    /// The [Function] is called when a [player] presses a button on the board, or drops a [Draggable]
+    /// The [index] refers to the index position on the [Board], from 0 - 8, if [index] is -1, no square has been selected
+    /// The [value] refers to the given value of the [Button] that will be placed on the [Board]. The value
+    /// is only placed on the board if the existing value is 0 or lower than the new value and placed by a different [player]
+    void _handlePress(int index, num newValue, Player player) {
+      handlePress(index, newValue, player, context);
+    }
+
+    // TODO get device width aswell??
     final _deviceHeight = MediaQuery.of(context).size.height;
 
+    final _width = squareSize + _deviceHeight * 0.015;
+    final _height = squareSize + _deviceHeight * 0.001;
+
     return SizedBox(
-      width: (squareSize + _deviceHeight * 0.015) * 3,
-      height: (squareSize + _deviceHeight * 0.001) * 3,
+      width: _width * 3,
+      height: _height * 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ...rows.map(
+          ..._rows.map(
             (list) => Row(
               children: [
                 ...list.map(
                   (object) => SizedBox(
-                    width: squareSize + _deviceHeight * 0.015,
-                    height: squareSize + _deviceHeight * 0.001,
+                    width: _width,
+                    height: _height,
                     child: _Square(
                       object: object,
-                      onPressed: onPressed,
+                      onPressed: _handlePress,
                       activePlayer: activePlayer,
                       rotate: rotate,
                     ),
