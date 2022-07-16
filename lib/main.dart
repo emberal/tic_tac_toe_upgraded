@@ -108,7 +108,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     LocalMultiplayerGame.rotateGlobal = MyPrefs.getBool(SettingsKey.rotate.key);
     LocalMultiplayerGame.returnObjectToPlayer =
-        MyPrefs.getBool(SettingsKey.returnObject.key);
+        MyPrefs.getBool(SettingsKey.returnObject.key, false);
 
     for (var element in MyTheme.colors) {
       if (element.id != "") {

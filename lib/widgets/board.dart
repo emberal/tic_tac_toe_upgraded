@@ -5,6 +5,7 @@ import 'package:tic_tac_toe_upgraded/game/game_utils.dart';
 import 'package:tic_tac_toe_upgraded/objects/player_ai.dart';
 
 import '../game/local_multiplayer_game.dart';
+import '../objects/shared_prefs.dart';
 import '../objects/square_object.dart';
 import '../objects/player.dart';
 import '../objects/theme.dart';
@@ -19,7 +20,7 @@ class Board extends StatelessWidget {
       this.updateState,
       this.switchTurn,
       this.rotateFun,
-      this.activePlayer,
+      this.players,
       this.ai,
       this.rotate = false,
       this.squareSize = 50,
@@ -42,8 +43,8 @@ class Board extends StatelessWidget {
   /// A [Function] used to change the [rotate] variable
   final VoidCallback? rotateFun;
 
-  /// The [Player] currently in control of the [board]
-  final Player? activePlayer;
+  /// The [Player]'s of the current game, index 0 is always the activePlayer of the [board]
+  final List<Player>? players;
 
   /// If one of the [Player]'s is an AI, this must be set, so that the AI may call the handlePress [Function] and get's the correct [context]
   final PlayerAI? ai;
@@ -90,8 +91,9 @@ class Board extends StatelessWidget {
 
       if (GameUtils.isComplete(
           board as List<SquareObject>, // FIXME
-          activePlayer!.usedValues,
-          activePlayer!.usedValues)) {
+          players?[0].usedValues ??
+              List.generate(GameUtils.numberOfValues, (index) => true),
+          players?[1].usedValues)) {
         // FIXME mark as complete if there are more objects but nowhere to place them, eg a player has only 1 left
         if (time != null) {
           time!.stop();
@@ -107,10 +109,17 @@ class Board extends StatelessWidget {
 
         String winnerString = winner != null ? player.toString() : "No one";
 
-        GameUtils.setData(winner!.name == "Player1", time ?? Stopwatch(),
-            timePlayed: type.timePlayed,
-            gamesWon: type.gamesWon,
-            gamesPlayed: type.gamesPlayed);
+        // Saves the values in stats
+
+        MyPrefs.setInt(type.gamesPlayed, MyPrefs.getInt(type.gamesPlayed) + 1);
+
+        if (time != null) {
+          MyPrefs.setInt(type.timePlayed,
+              MyPrefs.getInt(type.timePlayed) + time!.elapsed.inSeconds);
+        }
+        if (winner?.name == "Player1") {
+          MyPrefs.setInt(type.gamesWon, MyPrefs.getInt(type.gamesWon) + 1);
+        }
 
         showDialog(
           context: context,
@@ -159,10 +168,10 @@ class Board extends StatelessWidget {
       handlePress(index, newValue, player, context);
     }
 
-    // TODO get device width aswell??
     final _deviceHeight = MediaQuery.of(context).size.height;
+    final _deviceWidth = MediaQuery.of(context).size.width;
 
-    final _width = squareSize + _deviceHeight * 0.015;
+    final _width = squareSize + _deviceWidth * 0.02;
     final _height = squareSize + _deviceHeight * 0.001;
 
     return SizedBox(
@@ -181,7 +190,7 @@ class Board extends StatelessWidget {
                     child: _Square(
                       object: object,
                       onPressed: _handlePress,
-                      activePlayer: activePlayer,
+                      activePlayer: players?[0],
                       rotate: rotate,
                     ),
                   ),

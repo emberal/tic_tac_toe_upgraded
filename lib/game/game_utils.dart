@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe_upgraded/objects/shared_prefs.dart';
 import 'package:tic_tac_toe_upgraded/objects/square_object.dart';
 
 import '../objects/player.dart';
@@ -40,12 +41,6 @@ abstract class GameUtils {
   /// Returns 'true' if all the values of a [Player] has been used
   static bool isNoMoreMoves(List<bool> values) {
     return values.every((element) => element);
-  }
-
-  /// returns 'true' if all the squares on the board are used
-  @Deprecated("Game can continue as long as a Player has more moves")
-  static bool fullBoard(List<SquareObject> board) {
-    return board.every((element) => element.value != 0);
   }
 
   // TODO create recursive functions instead?
@@ -113,25 +108,16 @@ abstract class GameUtils {
     return false;
   }
 
-  /// Saves the data to the local-storage, if [won] also updates "games-won"
-  static Future<void> setData(bool won, Stopwatch time,
-      {String? gamesPlayed, String? gamesWon, String? timePlayed}) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    if (gamesPlayed != null) {
-      prefs.setInt(gamesPlayed, (prefs.getInt(gamesPlayed) ?? 0) + 1);
-    }
-    if (timePlayed != null) {
-      prefs.setInt(
-          timePlayed, (prefs.getInt(timePlayed) ?? 0) + time.elapsed.inSeconds);
-    }
-    if (gamesWon != null && won) {
-      prefs.setInt(gamesWon, (prefs.getInt(gamesWon) ?? 0) + 1);
+  static void switchTurn(List<Player> players) {
+    swap(players, 0, 1);
+    for (var element in players) {
+      element.isTurn = !element.isTurn;
     }
   }
 
-  static void switchTurn(Player one, Player two) {
-    one.isTurn = !one.isTurn;
-    two.isTurn = !two.isTurn;
+  static void swap(List<dynamic> list, indexOne, indexTwo) {
+    final temp = list[indexOne];
+    list[indexOne] = list[indexTwo];
+    list[indexTwo] = temp;
   }
 }

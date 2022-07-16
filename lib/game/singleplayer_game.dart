@@ -28,12 +28,17 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
 
   late Player _player;
   late PlayerAI _playerAI;
+  final List<Player> _players = [Player(), PlayerAI()];
   final _time = Stopwatch(); // Used to time the matches
 
   _SinglePlayerGamePageState() {
     _player = Player(
         name: "Player1", color: MyTheme.player1Color.color, isTurn: true);
     _playerAI = PlayerAI(name: "AI", color: MyTheme.player2Color.color);
+
+    _players[0] = _player;
+    _players[1] = _playerAI;
+
     _time.start();
   }
 
@@ -42,7 +47,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
 
   @override
   void switchTurn() {
-    GameUtils.switchTurn(_player, _playerAI);
+    GameUtils.switchTurn(_players);
     if (_playerAI.isTurn) {
       _playerAI.nextMove(board); // Starts the other players move
     }
@@ -62,7 +67,7 @@ class _SinglePlayerGamePageState extends State<SinglePlayerGamePage>
                 board: board,
                 updateState: updateState,
                 switchTurn: switchTurn,
-                activePlayer: _player.isTurn ? _player : _playerAI,
+                players: _players,
                 ai: _playerAI,
                 squareSize: 100,
                 navigator: Navigate.singlePlayer.route,

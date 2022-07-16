@@ -39,6 +39,11 @@ abstract class MyPrefs {
     prefs.setBool(key, value);
   }
 
+  static Future<void> setInt(String key, int value) async {
+    final prefs = await _instance;
+    prefs.setInt(key, value);
+  }
+
   static Future<void> saveMaterial(ColorWrapper material) async {
     final prefs = await _instance;
     prefs.setString(material.id, json.encode(material.toJSON()));

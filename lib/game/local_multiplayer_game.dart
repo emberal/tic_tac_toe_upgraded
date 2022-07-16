@@ -35,6 +35,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
       GameUtils.boardLength, (index) => SquareObject(index: index));
 
   late Player _playerOne, _playerTwo;
+  final List<Player> _players = [Player(), Player()];
 
   /// The timer that counts the time
   final _time = Stopwatch();
@@ -51,6 +52,10 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
         name: "Player1", color: MyTheme.player1Color.color, isTurn: starts);
     _playerTwo = Player(
         name: "Player2", color: MyTheme.player2Color.color, isTurn: !starts);
+
+    _players[starts ? 0 : 1] = _playerOne;
+    _players[!starts ? 0 : 1] = _playerTwo;
+
     _time.start();
   }
 
@@ -61,7 +66,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
   void rotate() => _rotate = !_rotate;
 
   @override
-  void switchTurn() => GameUtils.switchTurn(_playerOne, _playerTwo);
+  void switchTurn() => GameUtils.switchTurn(_players);
 
   final _marginVertical = 30.0;
   final _offset = const Offset(0, -20); // TODO animate movement?
@@ -72,7 +77,9 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
       title: "Local multiplayer game",
       body: Column(
         children: [
-          _playerTwo.isTurn ? Blur(color: _playerTwo.color) : const Blur(),
+          _players[0] == _playerTwo
+              ? Blur(color: _playerTwo.color)
+              : const Blur(),
           Container(
             margin: EdgeInsets.symmetric(vertical: _marginVertical),
             child: SelectButtons(
@@ -89,7 +96,7 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
                 updateState: updateState,
                 switchTurn: switchTurn,
                 rotateFun: rotate,
-                activePlayer: _playerOne.isTurn ? _playerOne : _playerTwo,
+                players: _players,
                 board: board,
                 rotate: _rotate && LocalMultiplayerGame.rotateGlobal,
                 navigator: Navigate.localMultiplayer.route,
@@ -107,7 +114,9 @@ class _LocalMultiplayerGameState extends State<LocalMultiplayerGame>
               offsetOnActivate: _offset,
             ),
           ),
-          _playerOne.isTurn ? Blur(color: _playerOne.color) : const Blur(),
+          _players[0] == _playerOne
+              ? Blur(color: _playerOne.color)
+              : const Blur(),
         ],
       ),
     );
